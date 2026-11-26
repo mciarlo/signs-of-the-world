@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Signs of the World &mdash; Global symbols and signage</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="bar">
+    <button class="logo">Signs of the World</button>
+    <nav><button>about</button><button>get in touch</button></nav>   <!-- placeholders: no destination yet -->
+    <button class="close" id="close" aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+  </header>
+
+  <section class="intro">
+    <div class="lede">
+      <p>Dedicated to the cooperative spirit <span class="block">and the beauty of visual language</span></p>
+      <h1>A collection of universal <span class="block">signs and symbols</span></h1>
+    </div>
+  </section>
+  <main class="grid" id="grid"></main>
+
+  <div id="detail">
+    <h1 class="dtitle" id="d-name"></h1>
+    <aside class="facts" id="d-meta"></aside>
+    <div class="stage">
+      <div id="hero" class="pending"></div>
+      <div class="dsw"><div class="tag" id="d-tag"></div><div class="vars" id="d-vars"></div></div>
+    </div>
+  </div>
+
+  <script src="shapes.js"></script>
+  <script src="signs-data.js"></script>
+  <script src="defs.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

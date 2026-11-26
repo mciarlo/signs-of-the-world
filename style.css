@@ -1,0 +1,406 @@
+:root {
+  --bg: #ffffff;
+  --ink: #111;
+  --mute: #8a8a8a;
+  --line: #e1e1e1;
+  --rule: #e1e1e1;
+  --ease: cubic-bezier(0.76, 0, 0.24, 1);
+  --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --bar: 80px;
+  --pad: 40px; /* page margin */
+  --gutter: 20px; /* gap between the 4 columns, at every breakpoint */
+  --base: 14px;
+  --label: 13px;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: var(--base);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+body.lock {
+  overflow: hidden;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  letter-spacing: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 0;
+} /* keyboard focus: a black ring, not the browser's blue one */
+
+/* header: always there, stuck to the top of the page */
+header.bar {
+  position: sticky;
+  top: 0;
+  height: var(--bar);
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.9);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: var(--gutter);
+  align-items: center;
+  padding: 20px var(--pad);
+  backdrop-filter: blur(8px);
+}
+header.bar .logo {
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  text-align: left;
+}
+.mark {
+  width: 1em;
+  height: 1em;
+  flex: none;
+  overflow: visible;
+}
+.block {
+  display: block;
+}
+header.bar .logo {
+  justify-self: start;
+  white-space: nowrap;
+}
+header.bar nav {
+  grid-column: 2/4;
+  display: flex;
+  gap: clamp(20px, 2.2vw, 40px);
+}
+header.bar nav button {
+  color: var(--ink);
+  transition: opacity 0.2s;
+}
+header.bar nav button:hover {
+  opacity: 0.55;
+}
+header.bar .close {
+  grid-column: 4;
+  justify-self: end;
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex: none;
+  margin-right: calc(
+    20px - var(--pad)
+  ); /* the close button sits 20px from the edge */
+  border: 1px solid var(--rule);
+}
+header.bar .close svg {
+  width: 11px;
+  height: 11px;
+}
+header.bar .close:hover {
+  border-color: var(--ink);
+}
+body.lock header.bar .close {
+  display: grid;
+}
+
+/* intro: the first screen. A short line in column 1 and the big statement from column 2, under the sticky header */
+.intro {
+  padding: 0 var(--pad) clamp(40px, 5.8vw, 77px);
+}
+.intro .lede {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: var(--gutter);
+}
+.intro .lede {
+  margin-top: calc(clamp(120px, 19vw, 350px) - 28px);
+  align-items: start;
+  text-wrap: pretty;
+}
+.intro .lede p {
+  grid-column: 1;
+  max-width: clamp(200px, 18vw, 330px);
+  line-height: 1.3;
+  padding-top: 0.45em;
+}
+.intro h1 {
+  grid-column: 2/4;
+  font-size: clamp(36px, 3.3vw, 60px);
+  line-height: 1;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+/* grid: a row of bordered boxes holding only the sign; the name and number of versions sit below, outside the border */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 0 var(--pad) 80px;
+  row-gap: 64px;
+} /* between rows: 64px desktop, 48px tablet, 40px mobile */
+.tile {
+  aspect-ratio: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-left: 0;
+}
+.cell:nth-child(4n + 1) .tile {
+  border-left: 1px solid var(--line);
+}
+@media (max-width: 1024px) {
+  :root {
+    --pad: 32px; /* page margin on tablet */
+  }
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    row-gap: 48px;
+  }
+  .cell:nth-child(4n + 1) .tile {
+    border-left: 0;
+  }
+  .cell:nth-child(3n + 1) .tile {
+    border-left: 1px solid var(--line);
+  }
+}
+@media (max-width: 700px) {
+  :root {
+    --pad: 20px; /* page margin on mobile */
+  }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    row-gap: 40px;
+  }
+  .cell:nth-child(3n + 1) .tile {
+    border-left: 0;
+  }
+  .cell:nth-child(2n + 1) .tile {
+    border-left: 1px solid var(--line);
+  }
+  .intro .lede {
+    grid-template-columns: 1fr;
+  }
+  .intro .lede {
+    margin-top: 72px;
+    gap: 18px;
+  }
+  .intro h1,
+  .intro .lede p {
+    grid-column: 1;
+  }
+  .intro h1 {
+    order: -1;
+  }
+}
+.cell {
+  display: block;
+}
+.tile svg {
+  width: 78%;
+  height: 78%;
+  display: block;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.tile.away svg {
+  visibility: hidden;
+} /* while its sign is flying to or from the detail page the box and its border stay */
+.cell:hover .tile svg {
+  transform: scale(1.05);
+}
+.cap {
+  margin-top: 20px;
+  line-height: 1.25;
+} /* box to label: 20px at every width */
+.cap .v {
+  margin-top: 8px;
+  color: var(--mute);
+} /* name to number of versions: 8px */
+
+/* detail: the facts in the first column, then a title and a bordered stage across the other three. Same four columns as the intro. */
+#detail {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: var(--bg);
+  overflow: auto;
+  display: none;
+  opacity: 0;
+  padding: var(--bar) var(--pad) var(--pad);
+}
+#detail.open {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: var(--gutter);
+  grid-template-rows: auto 1fr;
+}
+.dtitle {
+  grid-column: 2/5;
+  grid-row: 1;
+  font-size: clamp(30px, 3.4vw, 60px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  padding: clamp(24px, 4vw, 70px) 0 clamp(16px, 1.7vw, 30px);
+}
+.facts {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  line-height: 1.5;
+  align-self: start;
+  padding-top: 1px;
+}
+.facts .row b {
+  display: block;
+  font-weight: 400;
+}
+.facts .row div {
+  color: var(--mute);
+  white-space: pre-line;
+  text-wrap: pretty;
+}
+.facts .row a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.facts .row a:hover {
+  color: var(--ink, #000);
+}
+.stage {
+  grid-column: 2/5;
+  grid-row: 2;
+  position: relative;
+  border: 1px solid var(--line);
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  container-type: size; /* lets the sign size itself from the stage, whatever its shape */
+}
+#hero {
+  position: relative;
+  width: min(90cqw, 90cqh);
+  margin: auto;
+  aspect-ratio: 1;
+}
+#hero svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+#hero.pending svg {
+  visibility: hidden;
+}
+.dsw {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  padding: 0 clamp(14px, 1.4vw, 27px) clamp(14px, 1.4vw, 27px);
+}
+.tag {
+  margin-bottom: clamp(8px, 0.8vw, 14px);
+  color: var(--mute);
+}
+.tag:empty {
+  display: none;
+}
+.vars {
+  display: flex;
+  gap: clamp(8px, 0.7vw, 12px);
+}
+.vars:empty {
+  display: none;
+}
+.vars button {
+  width: clamp(44px, 4.2vw, 64px);
+  height: clamp(44px, 4.2vw, 64px);
+  border: 1px solid var(--rule);
+  background: transparent;
+  padding: 4px;
+  overflow: hidden;
+}
+.vars button.on {
+  border-color: var(--ink);
+}
+.vars svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  transform: scale(1.3);
+}
+.dtitle,
+.facts {
+  opacity: 0;
+  transition: opacity 0.2s;
+} /* closing: fade out over 200ms, straight away */
+#detail.in .dtitle,
+#detail.in .facts {
+  opacity: 1;
+  transition: opacity 0.3s 0.25s;
+} /* opening: fade in over 300ms, once the sign has landed */
+.flyer {
+  position: fixed;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+}
+.flyer svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+@media (max-width: 700px) {
+  header.bar {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  header.bar nav button {
+    white-space: nowrap;
+  }
+  header.bar nav {
+    margin-left: auto;
+    gap: 16px;
+  }
+}
+/* tablet and mobile: the detail page stacks (title, stage, then facts) */
+@media (max-width: 1024px) {
+  #detail.open {
+    display: flex;
+    flex-direction: column;
+  }
+  .dtitle {
+    padding-top: 28px;
+  }
+  .stage {
+    order: 2;
+    min-height: 62vh;
+  }
+  .facts {
+    order: 3;
+    padding: 32px 0 60px;
+  }
+  #hero {
+    width: min(80cqw, 80cqh);
+  }
+}
