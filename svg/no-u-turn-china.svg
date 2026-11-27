@@ -1,0 +1,9 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="no-u-turn-china">
+<circle id="frame-circle-1" cx="500" cy="500" r="500" fill="white"/>
+<circle id="frame-circle-2" cx="500" cy="500" r="484" fill="#C0111E"/>
+<circle id="frame-circle-3" cx="500" cy="500" r="393" fill="white"/>
+<rect id="symbol-2" x="189" y="243" width="76.7665" height="802.268" transform="rotate(-45 189 243)" fill="#C0111E"/>
+<path id="symbol-1-china" d="M371.5 771L240.5 624V498L329 594V397.25C329 301.567 406.567 224 502.25 224C597.933 224 675.5 301.567 675.5 397.25V771H587.5V401.25C587.5 353.892 549.108 315.5 501.75 315.5C454.392 315.5 416 353.892 416 401.25V594L505.5 498V624L371.5 771Z" fill="black"/>
+</g>
+</svg>

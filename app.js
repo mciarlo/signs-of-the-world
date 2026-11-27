@@ -432,6 +432,18 @@ class SignView{
 
 /* ============================================================ grid */
 const grid=document.getElementById('grid'), tiles={};
+/* addresses. Served over the web, each sign has a real page (build.py writes <slug>/index.html), and moving around the home
+   page uses those same addresses. Opened as a file, or as the single-file build, the site uses #/ addresses instead. */
+const SIGN=document.body.dataset.sign;                                // set on a sign's own page
+const PATHS=/^https?:$/.test(location.protocol) && document.body.hasAttribute('data-pages');
+const ROOT=new URL(document.body.dataset.root||'./', location.href);   // the home folder, worked out before the address first changes
+if (PATHS && !SIGN){ const base=document.createElement('base'); base.href=ROOT.href; document.head.prepend(base); }   // keeps images/… working while the address shows /stop/
+function urlFor(fam,vi){
+  const v = fam.ids.length>1 && vi>0 ? fam.vslugs[vi] : '';
+  if (PATHS && !fam.hidden) return new URL(fam.slug+'/'+(v?'#'+v:''), ROOT).href;
+  return new URL((PATHS ? ROOT.pathname : location.pathname)+location.search+'#/'+fam.slug+(v?'/'+v:''), location.href).href;
+}
+const newTab = e => e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button>0;   // leave those clicks to the browser
 const el=(tag,cls,text)=>{ const e=document.createElement(tag); if (cls) e.className=cls; if (text!=null) e.textContent=text; return e; };
 const decorative=svg=>{ svg.removeAttribute('role'); svg.removeAttribute('aria-label'); svg.setAttribute('aria-hidden','true'); return svg; };   // a sign whose name is already in the text beside it
 // the grid is ordered by form: shape of the outer frame, then the sign's main colour (hue), so like signs sit together
@@ -458,12 +470,13 @@ function hueOf(id){                                  // hue of the biggest satur
 // a family flagged last:true (Wi-Fi, Bluetooth, Phone, Recycling) goes after every shape group
 const GRID_ORDER=FAMILIES.map((f,i)=>({ f, i, s:f.last ? 99 : SHAPE_ORDER.indexOf(shapeOf(f.ids[0])), h:hueOf(f.ids[0]) }))
   .sort((a,b)=>a.s-b.s || a.h-b.h || a.i-b.i).map(x=>x.f);
-for (const f of GRID_ORDER.filter(f=>!f.hidden)){              // hidden: specialist signs, kept (and linkable) but off the grid
+for (const f of grid ? GRID_ORDER.filter(f=>!f.hidden) : []){              // hidden: specialist signs, kept (and linkable) but off the grid
   const cell=document.createElement('li'); cell.className='cell'; cell.dataset.cat=f.cat;
-  const link=document.createElement('a'); link.href='#/'+f.slug; cell.appendChild(link);
+  const link=document.createElement('a'); link.href=urlFor(f,0); cell.appendChild(link);
   const b=el('span','tile'); b.appendChild(decorative(new SignView(f,0).svg)); link.appendChild(b);          // b is what zooms into the detail page
   link.append(el('h2','',f.name), el('p','',f.ids.length+(f.ids.length===1?' version':' versions')));
-  link.addEventListener('click', e => { e.preventDefault(); openFrom = b; location.hash = '#/'+f.slug; });
+  link.addEventListener('click', e => { if (newTab(e)) return; e.preventDefault(); openFrom = b;
+    if (PATHS){ history.pushState(null,'',urlFor(f,0)); route(); } else location.hash = '#/'+f.slug; });
   grid.appendChild(cell); tiles[f.slug]=b;
 }
 
@@ -507,7 +520,7 @@ function addSources(box,label,list){
   links.forEach(([name,url])=>{ const a=el('a','',name), li=el('li'); a.href=url; a.target='_blank'; a.rel='noopener noreferrer'; li.appendChild(a); list_.appendChild(li); });
   addRow(box,label,list_);
 }
-function addRow(box,label,...content){ const row=el('section','row'); row.append(el('h3','',label),...content); box.appendChild(row); }
+function addRow(box,label,...content){ const row=el('section','row'); row.append(el(SIGN?'h2':'h3','',label),...content); box.appendChild(row); }   // on a sign's own page the sign name is the h1
 // each edge of the switcher fades in step with how far there is still to scroll that way, up to FADE pixels
 const FADE=48;
 function fadeEdges(){
@@ -543,9 +556,9 @@ function buildDetail(fam,vi){
   vars.scrollLeft=0; fadeEdges();
   fillInfo(fam,vi); return sign;
 }
-function setUrl(fam,vi,replace){
-  const h = '#/'+fam.slug + (fam.ids.length>1 && vi>0 ? '/'+fam.vslugs[vi] : '');
-  if (location.hash !== h) history.replaceState(history.state,'',h);
+function setUrl(fam,vi){
+  const u = urlFor(fam,vi);
+  if (location.href !== u) history.replaceState(history.state,'',u);
 }
 function selectVariant(i){
   if(!cur||i===cur.sign.vi) return;
@@ -554,7 +567,7 @@ function selectVariant(i){
 
 function openDetail(fam, vi, tile, instant){
   if (cur) return;
-  document.body.classList.add('lock'); detail.classList.add('open'); detail.scrollTop=0; detail.classList.remove('in');
+  document.body.classList.add('lock'); detail.classList.add('open'); detail.scrollTop=0; if (!SIGN) detail.classList.remove('in');   // a sign page arrives with its text showing
   hero.className='pending'; const sign=buildDetail(fam,vi); cur={fam,tile,sign};
   document.title = fam.name+' · Signs of the World';
   if (instant || !tile){ detail.style.opacity=1; hero.className='ready'; detail.classList.add('in'); return; }
@@ -580,34 +593,50 @@ function closeDetail(instant){
   fly.animate([rectCss(from),rectCss(to)],{duration:400,easing:EASE,fill:'forwards'}).onfinish=()=>{ fly.remove(); finish(); };
 }
 
-/* ============================================================ routing: #/family[/variant] */
+/* ============================================================ routing: /family/#variant, or #/family/variant */
+// which sign the address names
+function wanted(){
+  let [, slug, v] = location.hash.match(/^#\/([^/]+)(?:\/([^/]+))?/) || [];
+  if (!slug && (SIGN || (PATHS && location.pathname.startsWith(ROOT.pathname)))){
+    slug = SIGN || (location.pathname.slice(ROOT.pathname.length).match(/^([^/]+)\/(?:index\.html)?$/)||[])[1];
+    v = location.hash.slice(1);
+  }
+  const fam = slug && BY_SLUG[slug];
+  return fam ? { fam, vi: v ? Math.max(0, fam.vslugs.indexOf(v)) : 0 } : null;
+}
 function route(){
-  const m = location.hash.match(/^#\/([^/]+)(?:\/([^/]+))?/), fam = m && BY_SLUG[m[1]];
-  if (!fam){ if (cur) closeDetail(); return; }
-  let vi = m[2] ? Math.max(0, fam.vslugs.indexOf(m[2])) : 0;
+  const w = wanted();
+  if (!w){ if (cur) closeDetail(); return; }
+  const {fam,vi} = w;
   if (cur && cur.fam===fam){ selectVariant(vi); return; }
   if (cur) closeDetail(true);
   const tile = tiles[fam.slug], first = !route.done;
   openDetail(fam, vi, openFrom && openFrom===tile ? tile : (first ? null : tile), first || !(openFrom===tile));
   openFrom = null;
+  if (!SIGN) setUrl(fam,vi);                                       // an old #/ link settles on the sign's real address
 }
-window.addEventListener('hashchange', route);
-function requestClose(){ if(!cur) return; if (history.length>1 && !firstLoadOpen) history.back(); else { try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} closeDetail(); } }
+window.addEventListener(PATHS ? 'popstate' : 'hashchange', route);
+function requestClose(){
+  if(!cur) return;
+  if (SIGN){ location.assign(PATHS ? ROOT.href : new URL('index.html',ROOT).href); return; }   // a sign page has no grid behind it: go home
+  if (history.length>1 && !firstLoadOpen) history.back();
+  else { try{ history.replaceState(null,'',(PATHS ? ROOT.pathname : location.pathname)+location.search); }catch(e){} closeDetail(); }
+}
 $('close').addEventListener('click',()=>requestClose());
 $('d-vars').addEventListener('scroll',fadeEdges,{passive:true});
 new ResizeObserver(()=>{ if (cur){ showThumb($('d-vars'),cur.sign.vi); fadeEdges(); } }).observe(document.querySelector('.stage'));
-document.querySelectorAll('.logo').forEach(b=>b.addEventListener('click',e=>{ e.preventDefault(); if (cur) requestClose(); else scrollTo({top:0,behavior:'smooth'}); }));
+document.querySelectorAll('.logo').forEach(b=>b.addEventListener('click',e=>{ if (newTab(e)) return; e.preventDefault(); if (cur) requestClose(); else scrollTo({top:0,behavior:'smooth'}); }));
 addEventListener('keydown',e=>{
   if(!cur) return;
   if(e.key==='Escape') requestClose();
   if(e.key==='ArrowRight') selectVariant(Math.min(cur.fam.ids.length-1,cur.sign.vi+1));
   if(e.key==='ArrowLeft') selectVariant(Math.max(0,cur.sign.vi-1));
 });
-const firstLoadOpen = /^#\/[^/]+/.test(location.hash);
-route(); route.done = true;
+let firstLoadOpen = false;
+route(); route.done = true; firstLoadOpen = !!cur;                    // arrived straight on a sign: closing must not leave the site
 buildLogo();                                                          // after everything it uses ($) exists
 
 /* footer contact: the address is stored scrambled and only assembled when a person clicks, so it is never in the page for scrapers to read */
 { const c=[64,93,91,74,54,12,54,55,8,9,0,26,28,231,237,243,245,207,193,195,218,223,170,171,189,190,173,220,140,157,156,112,106,121,120,48,74,88,68], o=[19,23,0,11,3,34,27,21,22,15,26,16,17,4,10,14,37,38,9,31,6,36,25,18,8,13,33,28,2,5,30,7,12,29,24,35,32,20,1];
-  $('contact').addEventListener('click', e => { if (!e.isTrusted) return;     // ignore clicks made by scripts
+  $('contact')?.addEventListener('click', e => { if (!e.isTrusted) return;     // ignore clicks made by scripts
     location.href = o.map(n => String.fromCharCode(c[n] ^ ((41+7*n)&255))).join(''); }); }

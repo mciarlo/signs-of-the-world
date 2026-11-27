@@ -1,0 +1,8 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="no-u-turn-spain">
+<circle id="frame-circle-1" cx="500" cy="500" r="500" fill="#FF0000"/>
+<circle id="frame-circle-2" cx="500" cy="500" r="366" fill="white"/>
+<path id="symbol-1-es" d="M315.5 723.5L365 773L414.5 723.5V446.25C414.5 398.892 452.892 360.5 500.25 360.5C547.608 360.5 586 398.892 586 446.25V773L636.5 719.5L687 773V444.75C687 342.163 603.837 259 501.25 259C398.663 259 315.5 342.163 315.5 444.75V723.5Z" fill="black"/>
+<rect id="symbol-2" x="166" y="221" width="77.6823" height="866" transform="rotate(-45 166 221)" fill="#FF0000"/>
+</g>
+</svg>

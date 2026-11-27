@@ -1,0 +1,8 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="no-left-turn-sweden">
+<circle id="frame-circle-1" cx="500" cy="500" r="500" fill="#CE252C"/>
+<circle id="frame-circle-2" cx="500" cy="500" r="384" fill="#FFD100"/>
+<path id="symbol-1-sweden" d="M703.5 470.5V813H588V469C588 455.745 577.255 445 564 445H248V479L157 388L248 297V330.5H563.5C640.82 330.5 703.5 393.18 703.5 470.5Z" fill="black"/>
+<rect id="symbol-2" x="219.094" y="223.191" width="78" height="786" transform="rotate(-39.7691 219.094 223.191)" fill="#CE252C"/>
+</g>
+</svg>

@@ -1,0 +1,8 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="no-left-turn-spain">
+<circle id="frame-circle-1" cx="500" cy="500" r="500" fill="#FF0000"/>
+<circle id="frame-circle-2" cx="500" cy="500" r="366" fill="white"/>
+<path id="symbol-1-es" d="M243.5 423.5L204.5 372L243.5 325H574.5C627.519 325 670.5 367.981 670.5 421V801.5L621.5 752.5L572.5 801.5V423.5H243.5Z" fill="black"/>
+<rect id="symbol-2" x="166" y="221" width="77.6823" height="866" transform="rotate(-45 166 221)" fill="#FF0000"/>
+</g>
+</svg>

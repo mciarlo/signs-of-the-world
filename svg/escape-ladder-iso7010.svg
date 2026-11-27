@@ -1,0 +1,16 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="escape-ladder-iso7010-flat">
+<rect id="frame-rectangle-1" width="1000" height="1000" fill="white"/>
+<rect id="frame-rectangle-2" x="24" y="24" width="952" height="952" fill="#237F52"/>
+<g id="Vector">
+<path d="M330 115H366V885H330V115Z" fill="white"/>
+<path d="M636 115H672V885H636V115Z" fill="white"/>
+<path d="M356 148H648V184H356V148Z" fill="white"/>
+<path d="M356 282H648V318H356V282Z" fill="white"/>
+<path d="M356 416H648V452H356V416Z" fill="white"/>
+<path d="M356 550H648V586H356V550Z" fill="white"/>
+<path d="M356 684H648V720H356V684Z" fill="white"/>
+<path d="M356 818H648V854H356V818Z" fill="white"/>
+</g>
+</g>
+</svg>

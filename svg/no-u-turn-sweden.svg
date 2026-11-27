@@ -1,0 +1,8 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="no-u-turn-sweden">
+<circle id="frame-circle-1" cx="500" cy="500" r="500" fill="#CE252C"/>
+<circle id="frame-circle-2" cx="500" cy="500" r="384" fill="#FFD100"/>
+<path id="symbol-1-sweden" d="M307.5 699.5H275L366 792L458.5 699.5H426V424.25C426 382.414 459.914 348.5 501.75 348.5C543.586 348.5 577.5 382.414 577.5 424.25V788H693.5V425.5C693.5 318.909 607.091 232.5 500.5 232.5C393.909 232.5 307.5 318.909 307.5 425.5V699.5Z" fill="black"/>
+<rect id="symbol-2" x="157.504" y="304.496" width="78" height="786" transform="rotate(-54.6081 157.504 304.496)" fill="#CE252C"/>
+</g>
+</svg>

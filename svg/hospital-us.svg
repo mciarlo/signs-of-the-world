@@ -1,0 +1,7 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="hospital-us-flat">
+<path id="frame-rectangle-1" d="M0 66C0 29.5492 29.5492 0 66 0L934 0C970.451 0 1000 29.5492 1000 66V934C1000 970.451 970.451 1000 934 1000H66C29.5492 1000 0 970.451 0 934L0 66Z" fill="white"/>
+<path id="frame-rectangle-2" d="M26 66C26 43.9086 43.9086 26 66 26L934 26C956.091 26 974 43.9086 974 66V934C974 956.091 956.091 974 934 974H66C43.9086 974 26 956.091 26 934L26 66Z" fill="#003F87"/>
+<path id="symbol-1" d="M330 385H669V84H835V919H669V551H330V919H165V84H330V385Z" fill="white"/>
+</g>
+</svg>

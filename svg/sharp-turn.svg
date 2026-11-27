@@ -1,0 +1,7 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="sharp-turn">
+<path id="frame-rectangle-1" d="M0 146C0 120.595 20.5949 100 46 100L954 100C979.405 100 1000 120.595 1000 146V854C1000 879.405 979.405 900 954 900H46C20.5949 900 0 879.405 0 854L0 146Z" fill="white"/>
+<path id="symbol-1" d="M477 158H727.365L977 500L727.365 842H477L726.635 500L477 158Z" fill="black"/>
+<path id="symbol-2" d="M28 158H278.365L528 500L278.365 842H28L277.635 500L28 158Z" fill="black"/>
+</g>
+</svg>

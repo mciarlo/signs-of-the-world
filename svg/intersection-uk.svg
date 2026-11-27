@@ -1,0 +1,9 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="intersection-uk">
+<path id="frame-triangle-1" d="M447.532 49.0434C470.624 9.0318 528.374 9.03174 551.466 49.0433L990.062 809.009C1013.15 849.009 984.28 899 938.096 899H60.902C14.7184 899 -14.1497 849.009 8.93545 809.009L447.532 49.0434Z" fill="#E31017"/>
+<path id="frame-triangle-2" d="M499.5 133L890 812H109L499.5 133Z" fill="white"/>
+<g id="symbol-1">
+<path d="M573 779H427.5V620H317.5V546.5H428V400L500.5 327.5L573 400V546.5H684V620H573V779Z" fill="black"/>
+</g>
+</g>
+</svg>

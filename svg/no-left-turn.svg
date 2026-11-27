@@ -1,0 +1,9 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="no-left-turn-flat">
+<circle id="frame-circle-1" cx="500" cy="500" r="500" fill="white"/>
+<circle id="frame-circle-2" cx="500" cy="500" r="484" fill="#CA252C"/>
+<circle id="frame-circle-3" cx="500" cy="500" r="376" fill="white"/>
+<path id="symbol-1" d="M408.768 223.251C433.575 207.746 462.546 235.879 447.777 261.131L419.197 309.998H540.171C642.343 309.998 725.171 392.825 725.171 494.998V773.998H603.171V494.998C603.171 460.204 574.965 431.998 540.171 431.998H419.781L447.778 479.867C462.547 505.119 433.575 533.252 408.768 517.747L211.161 394.243C193.615 383.276 193.615 357.722 211.162 346.755L408.768 223.251Z" fill="black"/>
+<rect id="symbol-2" x="765.871" y="153.516" width="114" height="866" transform="rotate(45 765.871 153.516)" fill="#CA252C"/>
+</g>
+</svg>

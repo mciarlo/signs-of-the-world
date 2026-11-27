@@ -1,0 +1,9 @@
+<svg width="1000" height="1000" viewBox="0 0 1000 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="no-left-turn-china">
+<circle id="frame-circle-1" cx="500" cy="500" r="500" fill="white"/>
+<circle id="frame-circle-2" cx="500" cy="500" r="484" fill="#C0111E"/>
+<circle id="frame-circle-3" cx="500" cy="500" r="393" fill="white"/>
+<rect id="symbol-2" x="189" y="243" width="76.7665" height="802.268" transform="rotate(-45 189 243)" fill="#C0111E"/>
+<path id="symbol-1-china" d="M733.5 399.998V768.998H609.5V468.998C609.5 435.861 582.637 408.998 549.5 408.998H408.258L522 522.498H367L193 348.498L367 179.989L522 179.988L408.258 289.998H623.5C684.251 289.998 733.5 339.247 733.5 399.998Z" fill="black"/>
+</g>
+</svg>
