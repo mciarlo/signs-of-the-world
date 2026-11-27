@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+._*
+
+# editors
+.vscode/
+.idea/
+*.swp
+*~
+
+# logs and temporary files
+*.log
+*.tmp
+
+# secrets
+.env
+.env.*
+
+# installed dependencies and caches
+node_modules/
+__pycache__/
+*.pyc
+
+# Claude Code local settings
+.claude/
