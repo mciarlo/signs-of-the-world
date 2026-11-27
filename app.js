@@ -1,7 +1,7 @@
 /* ============================================================ catalogue */
 // ids refer to the numbered PNG/SVG files (1–55). Several ids in one family = variants that morph.
 const FAMILIES = [
-  {name:'Stop',                   cat:'traffic',  t:'fade', ids:['stop','stop-japan','stop-japan-1950','stop-brazil','stop-central-america','stop-china','stop-morocco','stop-nepal','stop-south-korea','stop-UAE'], v:['US','Japan','Japan 1950','Brazil','Central America','China','Morocco','Nepal','South Korea','UAE']},
+  {name:'Stop',                   cat:'traffic',  t:'fade', ids:['stop','stop-japan','stop-brazil','stop-central-america','stop-china','stop-morocco','stop-nepal','stop-south-korea','stop-UAE'], v:['US','Japan','Brazil','Central America','China','Morocco','Nepal','South Korea','UAE']},
   {name:'Yield',                  cat:'traffic',  t:'fade', ids:['yield','yield-china','yield-ireland','yield-new-zealand','yield-south-africa','yield-thailand','yield-uk'], v:['US','China','Ireland','New Zealand','South Africa','Thailand','UK']},
   {name:'Traffic signal ahead',   cat:'hazard',   ids:['light-ahead','light-ahead-flat-new-zealand','light-ahead-ireland','light-ahead-uk','light-ahead-japan'], v:['US','New Zealand','Ireland','UK','Japan']},
   {name:'Roundabout ahead',     cat:'hazard',   ids:['roundabout','roundabout-uk','roundabout-south-africa','roundabout-japan'], v:['US','UK','South Africa','Japan']},
@@ -432,6 +432,8 @@ class SignView{
 
 /* ============================================================ grid */
 const grid=document.getElementById('grid'), tiles={};
+const el=(tag,cls,text)=>{ const e=document.createElement(tag); if (cls) e.className=cls; if (text!=null) e.textContent=text; return e; };
+const decorative=svg=>{ svg.removeAttribute('role'); svg.removeAttribute('aria-label'); svg.setAttribute('aria-hidden','true'); return svg; };   // a sign whose name is already in the text beside it
 // the grid is ordered by form: shape of the outer frame, then the sign's main colour (hue), so like signs sit together
 const SHAPE_ORDER=['octagon','triangle-down','triangle','diamond','circle','square','rectangle','other'];
 function shapeOf(id){
@@ -457,11 +459,11 @@ function hueOf(id){                                  // hue of the biggest satur
 const GRID_ORDER=FAMILIES.map((f,i)=>({ f, i, s:f.last ? 99 : SHAPE_ORDER.indexOf(shapeOf(f.ids[0])), h:hueOf(f.ids[0]) }))
   .sort((a,b)=>a.s-b.s || a.h-b.h || a.i-b.i).map(x=>x.f);
 for (const f of GRID_ORDER.filter(f=>!f.hidden)){              // hidden: specialist signs, kept (and linkable) but off the grid
-  const cell=document.createElement('a'); cell.className='cell'; cell.dataset.cat=f.cat; cell.href='#/'+f.slug; cell.setAttribute('aria-label',f.name);
-  const b=document.createElement('div'); b.className='tile'; b.appendChild(new SignView(f,0).svg); cell.appendChild(b);          // b is what zooms into the detail page
-  const cap=document.createElement('div'); cap.className='cap';
-  const nm=document.createElement('div'); nm.textContent=f.name; const vr=document.createElement('div'); vr.className='v'; vr.textContent=f.ids.length+(f.ids.length===1?' version':' versions'); cap.append(nm,vr); cell.appendChild(cap);
-  cell.addEventListener('click', e => { e.preventDefault(); openFrom = b; location.hash = '#/'+f.slug; });
+  const cell=document.createElement('li'); cell.className='cell'; cell.dataset.cat=f.cat;
+  const link=document.createElement('a'); link.href='#/'+f.slug; cell.appendChild(link);
+  const b=el('span','tile'); b.appendChild(decorative(new SignView(f,0).svg)); link.appendChild(b);          // b is what zooms into the detail page
+  link.append(el('h2','',f.name), el('p','',f.ids.length+(f.ids.length===1?' version':' versions')));
+  link.addEventListener('click', e => { e.preventDefault(); openFrom = b; location.hash = '#/'+f.slug; });
   grid.appendChild(cell); tiles[f.slug]=b;
 }
 
@@ -501,26 +503,44 @@ function addSources(box,label,list){
     for (const [name,url] of pairs) if (/^https?:\/\//i.test(url)) links.push([name,url]);
   }
   if (!links.length) return;
-  const row=document.createElement('div'); row.className='row'; const lb=document.createElement('b'); lb.textContent=label; const tx=document.createElement('div');
-  links.forEach(([name,url],i)=>{ if (i) tx.append(document.createElement('br')); const a=document.createElement('a'); a.href=url; a.textContent=name; a.target='_blank'; a.rel='noopener noreferrer'; tx.appendChild(a); });
-  row.append(lb,tx); box.appendChild(row);
+  const list_=el('ul');
+  links.forEach(([name,url])=>{ const a=el('a','',name), li=el('li'); a.href=url; a.target='_blank'; a.rel='noopener noreferrer'; li.appendChild(a); list_.appendChild(li); });
+  addRow(box,label,list_);
+}
+function addRow(box,label,...content){ const row=el('section','row'); row.append(el('h3','',label),...content); box.appendChild(row); }
+// each edge of the switcher fades in step with how far there is still to scroll that way, up to FADE pixels
+const FADE=48;
+function fadeEdges(){
+  const v=$('d-vars'), left=v.scrollLeft, right=v.scrollWidth-v.clientWidth-left;
+  v.style.setProperty('--fade-l', Math.max(0,Math.min(FADE,left))+'px');
+  v.style.setProperty('--fade-r', Math.max(0,Math.min(FADE,right))+'px');
+}
+// when the switcher is wider than the stage, slide it just far enough to show the chosen thumbnail
+function showThumb(vars,vi){
+  const b=vars.children[vi]; if (!b) return;
+  const box=vars.getBoundingClientRect(), r=b.getBoundingClientRect(), inset=FADE;     // clear of the faded edge
+  const dx = Math.min(0, r.left-box.left-inset) || Math.max(0, r.right-box.right+inset);
+  if (dx) vars.scrollBy({left:dx, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'});
 }
 function fillInfo(fam,vi){
   $('d-tag').textContent = fam.ids.length>1 ? fam.vnames[vi] : '';
   $('d-name').textContent=fam.name;
-  [...$('d-vars').children].forEach((b,i)=>b.classList.toggle('on',i===vi));
+  [...$('d-vars').children].forEach((b,i)=>{ b.classList.toggle('on',i===vi); b.setAttribute('aria-pressed',i===vi); });
+  hero.firstElementChild.setAttribute('aria-label', fam.name+' sign'+(fam.ids.length>1 ? ', '+fam.vnames[vi] : ''));
+  showThumb($('d-vars'), vi);
   const box=$('d-meta'); box.innerHTML=''; const own=SIGN_DEFS[fam.ids[vi]]||{}, base=SIGN_DEFS[fam.ids[0]]||{};
   const d={}; for (const [k] of META) d[k] = own[k]!=null && own[k]!=='' && !(Array.isArray(own[k])&&!own[k].length) ? own[k] : base[k];   // a variant's own text wins; otherwise it shares the family's first entry
   for (const [k,label] of META){ let v=d[k];
     if (k==='sources'){ addSources(box,label,v); continue; }
     if (Array.isArray(v)) v=v.join('\n'); if (v==null||v==='') continue;
-    const row=document.createElement('div'); row.className='row'; const lb=document.createElement('b'); lb.textContent=label; const tx=document.createElement('div'); tx.textContent=String(v); row.append(lb,tx); box.appendChild(row); }
+    addRow(box,label,...String(v).split(/\n+/).map(line=>el('p','',line))); }
 }
 function buildDetail(fam,vi){
   hero.innerHTML=''; const sign=new SignView(fam,vi); hero.appendChild(sign.svg);
   const vars=$('d-vars'); vars.innerHTML='';
-  if (fam.ids.length>1) fam.ids.forEach((_,i)=>{ const b=document.createElement('button'); b.title=fam.vnames[i]; b.appendChild(new SignView(fam,i).svg);
+  if (fam.ids.length>1) fam.ids.forEach((_,i)=>{ const b=el('button'); b.type='button'; b.title=fam.vnames[i]; b.setAttribute('aria-label',fam.vnames[i]); b.appendChild(decorative(new SignView(fam,i).svg));
     b.addEventListener('click',()=>selectVariant(i)); vars.appendChild(b); });
+  vars.scrollLeft=0; fadeEdges();
   fillInfo(fam,vi); return sign;
 }
 function setUrl(fam,vi,replace){
@@ -574,7 +594,9 @@ function route(){
 window.addEventListener('hashchange', route);
 function requestClose(){ if(!cur) return; if (history.length>1 && !firstLoadOpen) history.back(); else { try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} closeDetail(); } }
 $('close').addEventListener('click',()=>requestClose());
-document.querySelectorAll('.logo').forEach(b=>b.addEventListener('click',()=>{ if (cur) requestClose(); else scrollTo({top:0,behavior:'smooth'}); }));
+$('d-vars').addEventListener('scroll',fadeEdges,{passive:true});
+new ResizeObserver(()=>{ if (cur){ showThumb($('d-vars'),cur.sign.vi); fadeEdges(); } }).observe(document.querySelector('.stage'));
+document.querySelectorAll('.logo').forEach(b=>b.addEventListener('click',e=>{ e.preventDefault(); if (cur) requestClose(); else scrollTo({top:0,behavior:'smooth'}); }));
 addEventListener('keydown',e=>{
   if(!cur) return;
   if(e.key==='Escape') requestClose();
@@ -584,3 +606,8 @@ addEventListener('keydown',e=>{
 const firstLoadOpen = /^#\/[^/]+/.test(location.hash);
 route(); route.done = true;
 buildLogo();                                                          // after everything it uses ($) exists
+
+/* footer contact: the address is stored scrambled and only assembled when a person clicks, so it is never in the page for scrapers to read */
+{ const c=[64,93,91,74,54,12,54,55,8,9,0,26,28,231,237,243,245,207,193,195,218,223,170,171,189,190,173,220,140,157,156,112,106,121,120,48,74,88,68], o=[19,23,0,11,3,34,27,21,22,15,26,16,17,4,10,14,37,38,9,31,6,36,25,18,8,13,33,28,2,5,30,7,12,29,24,35,32,20,1];
+  $('contact').addEventListener('click', e => { if (!e.isTrusted) return;     // ignore clicks made by scripts
+    location.href = o.map(n => String.fromCharCode(c[n] ^ ((41+7*n)&255))).join(''); }); }

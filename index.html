@@ -4,9 +4,25 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Signs of the World &mdash; Global symbols and signage</title>
+  <meta name="description" content="A collection of universal signs and symbols. Dedicated to the cooperative spirit and the beauty of visual language.">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="canonical" href="https://signsofthe.world/">
+  <!-- link previews -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Signs of the World">
+  <meta property="og:title" content="Signs of the World &mdash; Global symbols and signage">
+  <meta property="og:description" content="A collection of universal signs and symbols. Dedicated to the cooperative spirit and the beauty of visual language.">
+  <meta property="og:url" content="https://signsofthe.world/">
+  <meta property="og:image" content="https://signsofthe.world/images/share-yuri-krupenin.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bicycle road signs and a traffic mirror on a city street">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@signsoftheworld">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"Signs of the World","url":"https://signsofthe.world/","description":"A collection of universal signs and symbols. Dedicated to the cooperative spirit and the beauty of visual language."}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -14,27 +30,49 @@
 </head>
 <body>
   <header class="bar">
-    <button class="logo">Signs of the World</button>
-    <nav><button>about</button><button>get in touch</button></nav>   <!-- placeholders: no destination yet -->
-    <button class="close" id="close" aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <a class="logo" href="./">Signs of the World</a>
+    <button type="button" class="close" id="close" aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
   </header>
 
-  <section class="intro">
-    <div class="lede">
-      <p>Dedicated to the cooperative spirit <span class="block">and the beauty of visual language</span></p>
-      <h1>A collection of universal <span class="block">signs and symbols</span></h1>
-    </div>
-  </section>
-  <main class="grid" id="grid"></main>
+  <main>
+    <section class="intro">
+      <h1>A collection of universal signs and symbols. <span>Dedicated to the cooperative spirit and the beauty of visual language.</span></h1>
+      <!-- the main photo, named after its photographer -->
+      <figure class="hero">
+        <picture><source srcset="images/bike-signs-yuri-krupenin.webp" type="image/webp"><img src="images/bike-signs-yuri-krupenin.jpg" alt="Bicycle road signs and a traffic mirror on a city street" width="1320" height="924" fetchpriority="high"></picture>
+        <figcaption class="credit">Photo by Yuri Krupenin</figcaption>
+      </figure>
+    </section>
+    <ul class="grid" id="grid" aria-label="Signs"></ul>
+  </main>
 
-  <div id="detail">
-    <h1 class="dtitle" id="d-name"></h1>
-    <aside class="facts" id="d-meta"></aside>
-    <div class="stage">
-      <div id="hero" class="pending"></div>
-      <div class="dsw"><div class="tag" id="d-tag"></div><div class="vars" id="d-vars"></div></div>
+  <footer class="foot">
+    <p class="word"><span>Signs of the World</span></p>
+    <div class="row">
+      <nav aria-label="Footer">   <!-- About is a placeholder: no destination yet -->
+        <ul>
+          <li><button type="button">About</button></li>
+          <li><a href="https://x.com/signsoftheworld" target="_blank" rel="noopener">Updates</a></li>
+          <li><button type="button" id="contact">Get in touch</button></li>
+        </ul>
+      </nav>
+      <!-- photos, named after their photographers. A grey square shows if a file is missing -->
+      <figure class="shot"><picture><source srcset="images/no-entry-visual-patrol.webp" type="image/webp"><img src="images/no-entry-visual-patrol.jpg" alt="A dented no entry sign" width="650" height="650" loading="lazy" onerror="this.closest('picture').remove()"></picture></figure>
+      <figure class="shot"><picture><source srcset="images/yield-ibrahim-guetar.webp" type="image/webp"><img src="images/yield-ibrahim-guetar.jpg" alt="A yield sign on a post" width="650" height="650" loading="lazy" onerror="this.closest('picture').remove()"></picture></figure>
+      <figure class="shot"><picture><source srcset="images/bike-lane-sandrine-bascouert.webp" type="image/webp"><img src="images/bike-lane-sandrine-bascouert.jpg" alt="A bicycle sign on a pole" width="650" height="650" loading="lazy" onerror="this.closest('picture').remove()"></picture></figure>
     </div>
-  </div>
+  </footer>
+
+  <article id="detail" aria-labelledby="d-name">
+    <div class="info">   <!-- the right-hand column on desktop -->
+      <h2 class="dtitle" id="d-name"></h2>
+      <div class="facts" id="d-meta"></div>
+    </div>
+    <figure class="stage">
+      <div class="art"><div id="hero" class="pending"></div></div>
+      <figcaption class="dsw"><p class="tag" id="d-tag" aria-live="polite"></p><div class="vars" id="d-vars" role="group" aria-label="Versions"></div></figcaption>
+    </figure>
+  </article>
 
   <script src="shapes.js"></script>
   <script src="signs-data.js"></script>

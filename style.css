@@ -1,3 +1,6 @@
+/* Mobile first: every rule up here is the phone layout, and tablets use it too.
+   Desktop changes are all in one place at the bottom (wider than 1024px).
+   The one exception is a small step to four columns for the sign grid and footer (wider than 700px). */
 :root {
   --bg: #ffffff;
   --ink: #111;
@@ -7,8 +10,8 @@
   --ease: cubic-bezier(0.76, 0, 0.24, 1);
   --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --bar: 80px;
-  --pad: 40px; /* page margin */
-  --gutter: 20px; /* gap between the 4 columns, at every breakpoint */
+  --pad: 20px; /* page margin */
+  --gutter: 20px; /* gap between columns */
   --base: 14px;
   --label: 13px;
 }
@@ -42,6 +45,14 @@ a {
   color: inherit;
   text-decoration: none;
 }
+ul {
+  list-style: none;
+}
+h2,
+h3 {
+  font-size: inherit;
+  font-weight: 400;
+}
 :focus-visible {
   outline: 2px solid var(--ink);
   outline-offset: 0;
@@ -54,19 +65,20 @@ header.bar {
   height: var(--bar);
   z-index: 100;
   background: rgba(255, 255, 255, 0.9);
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  column-gap: var(--gutter);
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 20px var(--pad);
   backdrop-filter: blur(8px);
 }
 header.bar .logo {
-  font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 0.4em;
+  font-weight: 700;
   text-align: left;
+  white-space: nowrap;
 }
 .mark {
   width: 1em;
@@ -74,37 +86,15 @@ header.bar .logo {
   flex: none;
   overflow: visible;
 }
-.block {
-  display: block;
-}
-header.bar .logo {
-  justify-self: start;
-  white-space: nowrap;
-}
-header.bar nav {
-  grid-column: 2/4;
-  display: flex;
-  gap: clamp(20px, 2.2vw, 40px);
-}
-header.bar nav button {
-  color: var(--ink);
-  transition: opacity 0.2s;
-}
-header.bar nav button:hover {
-  opacity: 0.55;
-}
 header.bar .close {
-  grid-column: 4;
-  justify-self: end;
   display: none;
   place-items: center;
   width: 40px;
   height: 40px;
   flex: none;
-  margin-right: calc(
-    20px - var(--pad)
-  ); /* the close button sits 20px from the edge */
+  margin-right: calc(20px - var(--pad)); /* the close button sits 20px from the edge */
   border: 1px solid var(--rule);
+  transition: border-color 150ms ease;
 }
 header.bar .close svg {
   width: 11px;
@@ -117,41 +107,47 @@ body.lock header.bar .close {
   display: grid;
 }
 
-/* intro: the first screen. A short line in column 1 and the big statement from column 2, under the sticky header */
+/* intro: the statement, the main photo and its credit, stacked */
 .intro {
-  padding: 0 var(--pad) clamp(40px, 5.8vw, 77px);
-}
-.intro .lede {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  column-gap: var(--gutter);
-}
-.intro .lede {
-  margin-top: calc(clamp(120px, 19vw, 350px) - 28px);
-  align-items: start;
-  text-wrap: pretty;
-}
-.intro .lede p {
-  grid-column: 1;
-  max-width: clamp(200px, 18vw, 330px);
-  line-height: 1.3;
-  padding-top: 0.45em;
+  display: flex;
+  flex-direction: column;
+  padding: 20px var(--pad) 40px; /* 20px under the header, 40px down to the signs */
 }
 .intro h1 {
-  grid-column: 2/4;
-  font-size: clamp(36px, 3.3vw, 60px);
-  line-height: 1;
+  max-width: 12.9em; /* sets the line breaks, the same at every width */
+  font-size: 24px;
+  line-height: 1.25;
   font-weight: 500;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.05em;
+}
+.intro h1 span {
+  color: var(--mute);
+}
+.intro .hero {
+  margin-top: 40px;
+}
+.intro .hero img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1320 / 924; /* the photo's own shape, so nothing is cropped */
+  background: #ececec;
+}
+.intro .credit {
+  margin-top: 8px;
+  color: var(--mute);
 }
 
 /* grid: a row of bordered boxes holding only the sign; the name and number of versions sit below, outside the border */
 .grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(2, 1fr);
+  row-gap: 40px;
   margin: 0 var(--pad) 80px;
-  row-gap: 64px;
-} /* between rows: 64px desktop, 48px tablet, 40px mobile */
+}
+.cell a {
+  display: block;
+}
 .tile {
   aspect-ratio: 1;
   position: relative;
@@ -163,56 +159,9 @@ body.lock header.bar .close {
   border: 1px solid var(--line);
   border-left: 0;
 }
-.cell:nth-child(4n + 1) .tile {
+.cell:nth-child(odd) .tile {
   border-left: 1px solid var(--line);
-}
-@media (max-width: 1024px) {
-  :root {
-    --pad: 32px; /* page margin on tablet */
-  }
-  .grid {
-    grid-template-columns: repeat(3, 1fr);
-    row-gap: 48px;
-  }
-  .cell:nth-child(4n + 1) .tile {
-    border-left: 0;
-  }
-  .cell:nth-child(3n + 1) .tile {
-    border-left: 1px solid var(--line);
-  }
-}
-@media (max-width: 700px) {
-  :root {
-    --pad: 20px; /* page margin on mobile */
-  }
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
-    row-gap: 40px;
-  }
-  .cell:nth-child(3n + 1) .tile {
-    border-left: 0;
-  }
-  .cell:nth-child(2n + 1) .tile {
-    border-left: 1px solid var(--line);
-  }
-  .intro .lede {
-    grid-template-columns: 1fr;
-  }
-  .intro .lede {
-    margin-top: 72px;
-    gap: 18px;
-  }
-  .intro h1,
-  .intro .lede p {
-    grid-column: 1;
-  }
-  .intro h1 {
-    order: -1;
-  }
-}
-.cell {
-  display: block;
-}
+} /* the first box in each row closes the left side */
 .tile svg {
   width: 78%;
   height: 78%;
@@ -225,16 +174,74 @@ body.lock header.bar .close {
 .cell:hover .tile svg {
   transform: scale(1.05);
 }
-.cap {
+.cell h2 {
   margin-top: 20px;
   line-height: 1.25;
 } /* box to label: 20px at every width */
-.cap .v {
+.cell p {
   margin-top: 8px;
+  line-height: 1.25;
   color: var(--mute);
 } /* name to number of versions: 8px */
 
-/* detail: the facts in the first column, then a title and a bordered stage across the other three. Same four columns as the intro. */
+/* footer: the name across the full width, then the links and three photos in two columns */
+.foot {
+  padding: clamp(24px, 4.5vw, 64px) var(--pad) var(--pad);
+}
+.foot .word {
+  container-type: inline-size; /* the name is sized from this box, so it always spans the page margins */
+}
+.foot .word span {
+  display: block;
+  font-size: 12.2cqw; /* the letters of this name in Inter bold are 8.19 times the font size wide */
+  margin-left: -0.041em; /* cancels the space built into the left of the S */
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  white-space: nowrap;
+}
+.foot .row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* like the sign grid: links in the first box, photos in the other three */
+  gap: var(--gutter);
+  margin-top: clamp(40px, 6vw, 96px);
+}
+.foot nav {
+  align-self: start;
+}
+.foot nav ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.foot nav button,
+.foot nav a {
+  line-height: 1.3;
+  transition: opacity 150ms ease;
+}
+.foot nav button:hover,
+.foot nav a:hover {
+  opacity: 0.55;
+}
+.foot .shot {
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: #ececec;
+}
+.foot .shot picture {
+  display: block;
+  height: 100%;
+}
+.foot .shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1);
+}
+
+/* detail: stacked as title, stage, facts */
 #detail {
   position: fixed;
   inset: 0;
@@ -246,37 +253,36 @@ body.lock header.bar .close {
   padding: var(--bar) var(--pad) var(--pad);
 }
 #detail.open {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  column-gap: var(--gutter);
-  grid-template-rows: auto 1fr;
+  display: flex;
+  flex-direction: column;
+}
+.info,
+.art {
+  display: contents; /* wrappers that only matter on desktop */
 }
 .dtitle {
-  grid-column: 2/5;
-  grid-row: 1;
   font-size: clamp(30px, 3.4vw, 60px);
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
-  padding: clamp(24px, 4vw, 70px) 0 clamp(16px, 1.7vw, 30px);
+  padding: 20px 0 40px; /* 20px under the header, 40px down to the stage */
 }
 .facts {
-  grid-column: 1;
-  grid-row: 2;
+  order: 3;
   display: flex;
   flex-direction: column;
   gap: 40px;
   line-height: 1.5;
   align-self: start;
-  padding-top: 1px;
+  max-width: 520px; /* a comfortable line length */
+  padding: 40px 0 60px; /* 40px from the stage */
 }
-.facts .row b {
-  display: block;
-  font-weight: 400;
+.facts .row h3 {
+  margin-bottom: 4px;
 }
-.facts .row div {
+.facts .row p,
+.facts .row ul {
   color: var(--mute);
-  white-space: pre-line;
   text-wrap: pretty;
 }
 .facts .row a {
@@ -285,23 +291,22 @@ body.lock header.bar .close {
   text-underline-offset: 2px;
 }
 .facts .row a:hover {
-  color: var(--ink, #000);
+  color: var(--ink);
 }
+/* the stage takes its height from its width: a square for the sign with the switcher (if any) under it, 800px at most */
 .stage {
-  grid-column: 2/5;
-  grid-row: 2;
-  position: relative;
-  border: 1px solid var(--line);
-  min-height: 320px;
+  order: 2;
+  flex: none;
   display: flex;
   flex-direction: column;
-  container-type: size; /* lets the sign size itself from the stage, whatever its shape */
+  border: 1px solid var(--line);
+  container-type: inline-size;
 }
 #hero {
   position: relative;
-  width: min(90cqw, 90cqh);
-  margin: auto;
   aspect-ratio: 1;
+  width: min(80cqw, 570px, 64vh); /* the later limits are for tablets and phones held sideways */
+  margin: min(10cqw, 71px, 8vh) auto;
 }
 #hero svg {
   width: 100%;
@@ -312,13 +317,10 @@ body.lock header.bar .close {
   visibility: hidden;
 }
 .dsw {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  padding: 0 clamp(14px, 1.4vw, 27px) clamp(14px, 1.4vw, 27px);
+  --inset: 14px; /* space between the switcher and the stage's edges */
 }
 .tag {
-  margin-bottom: clamp(8px, 0.8vw, 14px);
+  margin: 0 var(--inset) 6px;
   color: var(--mute);
 }
 .tag:empty {
@@ -326,14 +328,22 @@ body.lock header.bar .close {
 }
 .vars {
   display: flex;
-  gap: clamp(8px, 0.7vw, 12px);
+  gap: 8px;
+  padding: 2px var(--inset) var(--inset); /* inside the scroller, so thumbnails slide to the box edges and focus rings are not clipped */
+  overflow-x: auto; /* too many to fit: swipe sideways */
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* an edge fades out while there are more thumbnails beyond it (app.js sets the two widths) */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-l, 0px), #000 calc(100% - var(--fade-r, 0px)), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade-l, 0px), #000 calc(100% - var(--fade-r, 0px)), transparent);
 }
 .vars:empty {
   display: none;
 }
 .vars button {
-  width: clamp(44px, 4.2vw, 64px);
-  height: clamp(44px, 4.2vw, 64px);
+  flex: none;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--rule);
   background: transparent;
   padding: 4px;
@@ -369,38 +379,126 @@ body.lock header.bar .close {
   height: 100%;
   display: block;
 }
-@media (max-width: 700px) {
-  header.bar {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
+
+/* ---------------------------------------------------------------- tablet: the sign grid and footer change to four columns */
+@media (min-width: 701px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr);
+    row-gap: 48px;
   }
-  header.bar nav button {
-    white-space: nowrap;
+  .cell:nth-child(odd) .tile {
+    border-left: 0;
   }
-  header.bar nav {
-    margin-left: auto;
-    gap: 16px;
+  .cell:nth-child(4n + 1) .tile {
+    border-left: 1px solid var(--line);
+  }
+  .foot .row {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
-/* tablet and mobile: the detail page stacks (title, stage, then facts) */
-@media (max-width: 1024px) {
+
+/* ---------------------------------------------------------------- desktop */
+@media (min-width: 1025px) {
+  :root {
+    --pad: 40px;
+    --gutter: 40px;
+  }
+
+  /* landing */
+  /* two halves: the statement hangs from the top of the left one and the credit sits at its bottom;
+     the photo fills the right one */
+  .intro {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    padding-top: 20px;
+    padding-bottom: 108px;
+  }
+  .intro h1 {
+    position: relative; /* above the figure, which spans both halves, so the text can be selected */
+    z-index: 1;
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+  }
+  .intro .hero {
+    grid-column: 1 / -1;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: subgrid; /* the same two halves: credit left, photo right */
+    margin-top: 0;
+  }
+  .intro .hero picture {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .intro .credit {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: end;
+    margin-top: 0;
+  }
+  .grid {
+    row-gap: 64px;
+  }
+
+  /* detail: two halves. The stage fills the screen height on the left (800px at most) and stays put while the text
+     beside it scrolls. In the stage the switcher takes the height it needs (wrapping onto more rows) and the sign gets the rest. */
   #detail.open {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--gutter);
+    align-content: start;
+    padding-top: calc(var(--bar) + 40px);
+  }
+  .info {
+    display: block;
+    grid-column: 2;
+    grid-row: 1;
   }
   .dtitle {
-    padding-top: 28px;
-  }
-  .stage {
-    order: 2;
-    min-height: 62vh;
+    padding-top: 0;
   }
   .facts {
-    order: 3;
-    padding: 32px 0 60px;
+    padding: 0;
+  }
+  .stage {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: min(800px, 100vh - var(--bar) - 40px - var(--pad));
+    min-height: 420px;
+    padding-top: 24px;
+  }
+  .art {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    margin: 0 24px;
+    container-type: size; /* the sign sizes itself from the space above the switcher */
   }
   #hero {
-    width: min(80cqw, 80cqh);
+    width: min(100cqw, 100cqh);
+    margin: auto;
+  }
+  .dsw {
+    --inset: 24px;
+    min-height: 24px; /* keeps the space under the sign when there is only one version */
+  }
+  .tag {
+    margin-bottom: calc(clamp(8px, 0.8vw, 14px) - 2px);
+  }
+  .vars {
+    flex-wrap: wrap;
+    gap: clamp(8px, 0.7vw, 12px);
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .vars button {
+    width: clamp(44px, 4vw, 64px);
+    height: clamp(44px, 4vw, 64px);
   }
 }
