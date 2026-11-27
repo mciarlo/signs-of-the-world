@@ -580,7 +580,7 @@ function openDetail(fam, vi, tile, instant){
     hero.className='ready'; fly.remove(); detail.classList.add('in'); animating=false; detail.getAnimations().forEach(a=>a.cancel()); detail.style.opacity=1; };
 }
 function closeDetail(instant){
-  if(!cur) return; const {fam,tile,sign}=cur; cur=null; document.title='Signs of the World — Global symbols and signage';
+  if(!cur) return; const {fam,tile,sign}=cur; cur=null; document.title='Signs of the World · Universal signs and symbols';
   detail.classList.remove('in');
   const finish=()=>{ if (tile) tile.classList.remove('away'); detail.classList.remove('open'); detail.getAnimations().forEach(a=>a.cancel()); detail.style.opacity=0; hero.style.background=''; document.body.classList.remove('lock'); animating=false; };
   if (instant || !tile){ finish(); return; }
