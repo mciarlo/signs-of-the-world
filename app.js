@@ -4,7 +4,7 @@ const FAMILIES = [
   {name:'Stop',                   cat:'traffic',  t:'fade', ids:['stop','stop-japan','stop-brazil','stop-central-america','stop-china','stop-morocco','stop-nepal','stop-south-korea','stop-UAE'], v:['US','Japan','Brazil','Central America','China','Morocco','Nepal','South Korea','UAE']},
   {name:'Yield',                  cat:'traffic',  t:'fade', ids:['yield','yield-china','yield-ireland','yield-new-zealand','yield-south-africa','yield-thailand','yield-uk'], v:['US','China','Ireland','New Zealand','South Africa','Thailand','UK']},
   {name:'Traffic signal ahead',   cat:'hazard',   ids:['light-ahead','light-ahead-flat-new-zealand','light-ahead-ireland','light-ahead-uk','light-ahead-japan'], v:['US','New Zealand','Ireland','UK','Japan']},
-  {name:'Roundabout ahead',     cat:'hazard',   ids:['roundabout','roundabout-uk','roundabout-south-africa','roundabout-japan'], v:['US','UK','South Africa','Japan']},
+  {name:'Roundabout ahead',     cat:'hazard',   ids:['roundabout-us','roundabout-uk','roundabout-south-africa','roundabout-japan'], v:['US','UK','South Africa','Japan']},
   {name:'Two way traffic ahead',cat:'hazard',   ids:['two-way-traffic','two-way-traffic-uk'], v:['US','UK']},
   {name:'Intersection ahead',    cat:'hazard',   ids:['intersection','intersection-uk'], v:['US','UK']},
   {name:'Traffic merges ahead', cat:'hazard',   ids:['merge']},
@@ -188,6 +188,35 @@ function alignLoops(fa, fb, N){                      // two exact outlines -> tw
     oL[2*q]=a[0]; oL[2*q+1]=a[1]; oS[2*q]=b[0]; oS[2*q+1]=b[1]; }
   return swap ? [oS,oL] : [oL,oS];
 }
+/* ---- point to point: lettering drawn from one master (layers named symbol-text…). When two outlines have the same number of
+   segments, every drawn point travels straight to its counterpart, the way a variable font does. ---- */
+function pathSegs(d){                              // M/L/C/Z path -> loops of cubic segments [x0,y0, x1,y1, x2,y2, x3,y3]; a straight edge becomes a flat cubic
+  const tok=d.match(/[MLCZ]|-?\d*\.?\d+(?:e-?\d+)?/g)||[], loops=[]; let i=0, cmd=null, cur=null, start=null, last=null; const num=()=>parseFloat(tok[i++]);
+  const line=(p,q)=>[p[0],p[1], p[0]+(q[0]-p[0])/3, p[1]+(q[1]-p[1])/3, p[0]+(q[0]-p[0])*2/3, p[1]+(q[1]-p[1])*2/3, q[0],q[1]];
+  const close=()=>{ if (cur && Math.hypot(last[0]-start[0], last[1]-start[1])>.05){ cur.push(line(last,start)); last=start; } };
+  while (i<tok.length){ if (/[MLCZ]/.test(tok[i])) cmd=tok[i++];
+    if (cmd==='M'){ close(); start=last=[num(),num()]; cur=[]; loops.push(cur); cmd='L'; }
+    else if (cmd==='L'){ const q=[num(),num()]; cur.push(line(last,q)); last=q; }
+    else if (cmd==='C'){ const s=[last[0],last[1],num(),num(),num(),num(),num(),num()]; cur.push(s); last=[s[6],s[7]]; }
+    else if (cmd==='Z'){ close(); cmd=null; } else break; }
+  close();
+  return loops.filter(l=>l.length>1);
+}
+function pointMatch(da, db, N){                    // -> { from, to } with N points per loop, or null when the two paths are not built alike
+  const box=l=>{ const x=l.map(s=>s[0]), y=l.map(s=>s[1]), x0=Math.min(...x), y0=Math.min(...y); return { x0, y0, w:Math.max(...x)-x0||1, h:Math.max(...y)-y0||1 }; };
+  const turn=l=>Math.sign(l.reduce((a,s,i)=>{ const t=l[(i+1)%l.length]; return a+s[0]*t[1]-t[0]*s[1]; },0));
+  const bySize=ls=>ls.map(l=>({ l, b:box(l) })).sort((p,q)=>q.b.w*q.b.h-p.b.w*p.b.h);
+  const A=bySize(pathSegs(da)), B=bySize(pathSegs(db));
+  if (!A.length || A.length!==B.length || A.some((a,i)=>a.l.length!==B[i].l.length || a.l.length>N || turn(a.l)!==turn(B[i].l))) return null;
+  const at=(s,t)=>{ const u=1-t, a=u*u*u, b=3*u*u*t, c=3*u*t*t, e=t*t*t; return [a*s[0]+b*s[2]+c*s[4]+e*s[6], a*s[1]+b*s[3]+c*s[5]+e*s[7]]; };
+  const from=[], to=[];
+  A.forEach((a,i)=>{ const b=B[i], n=a.l.length; let best=0, bv=Infinity;   // the same starting point, even if the two files begin the outline in different places
+    for (let k=0;k<n;k++){ let v=0; for (let s=0;s<n;s++){ const p=a.l[s], q=b.l[(s+k)%n]; v+=((p[0]-a.b.x0)/a.b.w-(q[0]-b.b.x0)/b.b.w)**2+((p[1]-a.b.y0)/a.b.h-(q[1]-b.b.y0)/b.b.h)**2; } if (v<bv){ bv=v; best=k; } }
+    const f=new Float32Array(2*N), g=new Float32Array(2*N); let q=0;
+    for (let s=0;s<n;s++){ const c=Math.floor(N/n)+(s<N%n?1:0); for (let u=0;u<c;u++,q++){ const x=at(a.l[s],u/c), y=at(b.l[(s+best)%n],u/c); f[2*q]=x[0]; f[2*q+1]=x[1]; g[2*q]=y[0]; g[2*q+1]=y[1]; } }
+    from.push(f); to.push(g); });
+  return { from, to };
+}
 const polyD = a => { let d='M'+a[0].toFixed(1)+' '+a[1].toFixed(1); for (let i=2;i<a.length;i+=2) d+='L'+a[i].toFixed(1)+' '+a[i+1].toFixed(1); return d+'Z'; };
 
 /* ============================================================ per-sign layers (cached) */
@@ -274,8 +303,6 @@ const SEQ=[.15,.78], SEQ_SLOW=1.5;                    // sequenced transitions: 
 const MORPH_COVER=0.8, DISSOLVE=0.08;                // symbol morphs if >=80% of its area pairs up on both sides; a fading symbol scales by 8%
 const scaleLoops=(loops,h,k)=>loops.map(l=>{ const o=new Float32Array(l.length); for(let q=0;q<l.length;q+=2){ o[q]=h[0]+(l[q]-h[0])*k; o[q+1]=h[1]+(l[q+1]-h[1])*k; } return o; });
 // a fading symbol scales only when its sign says so in defs.json ("symbolScale": 0.08 = 8%, or true); otherwise it simply fades
-// "symbolSpeed" in defs.json (a number >= 1): a morphing symbol moves faster than its frame, so it never outgrows it. A symbol that shrinks leads (it finishes early); one that grows trails (it starts late).
-const symSpeed=id=>{ const v=SIGN_DEFS[id] && SIGN_DEFS[id].symbolSpeed; return v>1 ? +v : 0; };
 const symScale=id=>{ const v=SIGN_DEFS[id] && SIGN_DEFS[id].symbolScale; return v===true ? DISSOLVE : (+v||0); };
 
 /* ============================================================ sign definitions: defs.json -> frame state ============================================================
@@ -343,10 +370,11 @@ class SignView{
     this.off = this.shaped ? 3 : 0;                                                // the first three paths are halo, ring, face
     this.L=fam.ids.map(id=>this.shaped ? prep(id).filter(l=>l.kind==='s') : prep(id));
     this.svg=document.createElementNS(NS_URI,'svg'); this.svg.setAttribute('viewBox',VB); this.svg.setAttribute('role','img'); this.svg.setAttribute('aria-label',fam.name);
+    this.base=this.shaped ? this.svg.appendChild(document.createElementNS(NS_URI,'g')) : null;   // the frame's own group, so the frame can fade as one piece
     this.paths=[]; this.ensure(this.off+Math.max(...this.L.map(l=>l.length)));
     this.showExact(vi);
   }
-  ensure(n){ while (this.paths.length<n){ const p=document.createElementNS(NS_URI,'path'); p.setAttribute('fill-rule','evenodd'); this.svg.appendChild(p); this.paths.push(p); } }
+  ensure(n){ while (this.paths.length<n){ const p=document.createElementNS(NS_URI,'path'); p.setAttribute('fill-rule','evenodd'); (this.paths.length<this.off ? this.base : this.svg).appendChild(p); this.paths.push(p); } }
   showExact(vi){
     this.vi=vi; this.state=null; const lay=this.L[vi];
     if (this.shaped){ this.fs=defState(this.fam.ids[vi]); this.drawFrame(this.fs); }
@@ -354,19 +382,21 @@ class SignView{
       p.setAttribute('d',l.d); p.setAttribute('fill',rgbCss(l.fill)); p.setAttribute('fill-opacity',1); });
   }
   drawFrame(st){
+    this.base.setAttribute('opacity', st ? st.alpha.toFixed(3) : '1');   // fading the group, not each layer: the layers underneath never show through (a frame leaving or arriving stays its own colours)
     for (let i=0;i<3;i++){ const p=this.paths[i];
       if (!st){ p.setAttribute('d',''); continue; }
       const isX=st.kind==='x', P=isX?null:pairsOf(st.p), xs=isX?[0]:P.map(q=>q[0]), ys=isX?[0]:P.map(q=>q[1]), cx=(Math.min(...xs)+Math.max(...xs))/2, cy=(Math.min(...ys)+Math.max(...ys))/2;
       p.setAttribute('fill-rule', isX?'nonzero':'evenodd');
-      p.setAttribute('d',frameD(st)[i]); p.setAttribute('fill',rgbCss([st.halo,st.ring,st.face][i])); p.setAttribute('fill-opacity',st.alpha.toFixed(3));
-      if (i===0){ const w=Math.max(0,Math.min(1,(Math.min(...st.halo)-225)/30)); p.setAttribute('stroke','#c1c1c1'); p.setAttribute('stroke-width','1'); p.setAttribute('vector-effect','non-scaling-stroke'); p.setAttribute('stroke-opacity',(w*st.alpha).toFixed(3)); }   // a white outer edge gets a 1px #c1c1c1 outline, faded in and out as the colour morphs
+      p.setAttribute('d',frameD(st)[i]); p.setAttribute('fill',rgbCss([st.halo,st.ring,st.face][i]));
+      if (i===0){ const w=Math.max(0,Math.min(1,(Math.min(...st.halo)-225)/30)); p.setAttribute('stroke','#c1c1c1'); p.setAttribute('stroke-width','1'); p.setAttribute('vector-effect','non-scaling-stroke'); p.setAttribute('stroke-opacity',w.toFixed(3)); }   // a white outer edge gets a 1px #c1c1c1 outline, faded in and out as the colour morphs
       if (!isX && st.rot) p.setAttribute('transform',`rotate(${st.rot.toFixed(2)} ${cx.toFixed(1)} ${cy.toFixed(1)})`); else p.removeAttribute('transform'); }
   }
   // build the list of transitions from what is on screen now to variant vi
   plan(vi){
     const A=(this.state||itemsOf(this.L[this.vi])).map(it=>it.area?it:meta(it)), B=itemsOf(this.L[vi]), tr=[], ua=new Set(), ub=new Set();
-    const morph=(kind,i,j)=>{ ua.add(i); ub.add(j); const lp=matchLoops(A[i].loops,B[j].loops,A[i].raw,B[j].raw,kind==='s');
-      tr.push({ type:'morph', kind, key:B[j].key, oa_:(kind==='f'?0:1000)+i, ob_:(kind==='f'?0:1000)+j, from:lp.from, to:lp.to, spin:lp.spin, fa:A[i].rgb, fb:B[j].rgb, oa:A[i].op, ob:B[j].op, delay:kind==='f'?0:.1 }); };
+    const lettering=it=>/^symbol-text/.test(it.key||'') && it.d;
+    const morph=(kind,i,j)=>{ ua.add(i); ub.add(j); const lp=(kind==='s' && lettering(A[i]) && lettering(B[j]) && pointMatch(A[i].d,B[j].d,NS)) || matchLoops(A[i].loops,B[j].loops,A[i].raw,B[j].raw,kind==='s');
+      tr.push({ type:'morph', kind, key:B[j].key, oa_:(kind==='f'?0:1000)+i, ob_:(kind==='f'?0:1000)+j, from:lp.from, to:lp.to, spin:lp.spin, fa:A[i].rgb, fb:B[j].rgb, oa:A[i].op, ob:B[j].op }); };
     if (this.shaped){                                // frame: interpolate the two definitions. A variant without a frame keeps the other's shape and fades it.
       let f0=this.fs||defState(this.fam.ids[this.vi]), f1=defState(this.fam.ids[vi]);
       if (f0 && !f1) f1={...f0, alpha:0}; else if (!f0 && f1) f0={...f1, alpha:0};
@@ -391,16 +421,21 @@ class SignView{
     const cov=Math.min(symArea(A,sPairs.map(p=>p[0]))/(symArea(A,allS(A))||1), symArea(B,sPairs.map(p=>p[1]))/(symArea(B,allS(B))||1));
     tr.cov=cov; tr.mode=this.fam.t || (named.pairs.length || cov>=MORPH_COVER ? 'morph' : 'fade');   // named pairs = the drawer's intent
     if (tr.mode==='morph') for (const [i,j] of sPairs) morph('s',i,j);
-    const spd=Math.max(symSpeed(this.fam.ids[this.vi]), symSpeed(this.fam.ids[vi]));
-    if (spd){ const shrinks=symArea(B,allS(B)) < symArea(A,allS(A)), w=shrinks ? [0,1/spd] : [1-1/spd,1];
-      tr.forEach(t=>{ if(t.type==='morph' && t.kind==='s') t.win=w; }); }
     const hub=X=>{ const k=allS(X), w=symArea(X,k)||1; return [0,1].map(d=>k.reduce((s,q)=>s+X[q].c[d]*X[q].area,0)/w); };   // the symbol's own centre, for the scale
     const ha=hub(A), hb=hub(B);
     A.forEach((a,i)=>{ if(!ua.has(i)) tr.push({ type:'out', kind:a.kind, key:a.key, d:a.d, oa_:(a.kind==='f'?0:1000)+i, from:a.loops, fa:a.rgb, oa:a.op, hub:ha, sc:a.kind==='s' ? symScale(this.fam.ids[this.vi]) : 0 }); });
     B.forEach((b,j)=>{ if(!ub.has(j)) tr.push({ type:'in',  kind:b.kind, key:b.key, d:b.d, ob_:(b.kind==='f'?0:1000)+j, to:b.loops,   fb:b.rgb, ob:b.op, hub:hb, sc:b.kind==='s' ? symScale(this.fam.ids[vi]) : 0 }); });
-    // stacking: follow the old sign's order for the first half, the new sign's order for the second half
-    tr.byA=[...tr].sort((x,y)=>(x.oa_ ?? x.ob_)-(y.oa_ ?? y.ob_));
-    tr.byB=[...tr].sort((x,y)=>(x.ob_ ?? x.oa_)-(y.ob_ ?? y.oa_));
+    // stacking: morphing layers follow the old sign's order for the first half, the new sign's order for the second half. A fading
+    // layer stays over or under the same morphing layers throughout, as in its own sign, so nothing jumps on top of another halfway.
+    // With nothing morphing there is nothing to follow: old layers stay underneath, new ones on top.
+    const morphs=tr.filter(t=>t.type==='morph');
+    const stack=(own,other,guest)=>{                 // own: this half's order; guest: the fading layers that only exist in the other sign
+      const key=t=>{ if (t.type!==guest) return t[own];
+        const above=morphs.filter(m=>m[other]>t[other]).map(m=>m[own]);
+        return (above.length ? Math.min(...above)-.5 : Math.max(...morphs.map(m=>m[own]))+.5) + t[other]*1e-6; };
+      return [...tr].sort((x,y)=>key(x)-key(y)); };
+    if (morphs.length){ tr.byA=stack('oa_','ob_','in'); tr.byB=stack('ob_','oa_','out'); }
+    else tr.byA=tr.byB=[...tr.filter(t=>t.type==='out'), ...tr.filter(t=>t.type==='in')];
     tr.seq = !!this.fam.seq && this.shaped && tr.some(t=>t.kind==='s');   // symbols fade out, then the base shape morphs, then new symbols fade in
     return tr;
   }
@@ -412,7 +447,7 @@ class SignView{
       const t=list[i-this.off]; if(!t){ p.setAttribute('d',''); return; }
       let loops, rgb, op, d=t.d;                     // d: the drawn path. A fading layer keeps it, so nothing shifts when the exact sign is swapped in at the end
       if (t.type==='morph'){ d=undefined;
-        const e=t.win ? ease(clamp((T-t.win[0])/(t.win[1]-t.win[0]))) : ease(clamp((T-t.delay)/(1-t.delay))); loops=t.from.map((a,k)=>{ const b=t.to[k], o=new Float32Array(a.length); for(let q=0;q<a.length;q++) o[q]=a[q]+(b[q]-a[q])*e;
+        const e=ease(T); loops=t.from.map((a,k)=>{ const b=t.to[k], o=new Float32Array(a.length); for(let q=0;q<a.length;q++) o[q]=a[q]+(b[q]-a[q])*e;
           const w=t.spin && t.spin[k]; return w ? turned(o, w.th*e, w.ca, [w.ca[0]+(w.cb[0]-w.ca[0])*e, w.ca[1]+(w.cb[1]-w.ca[1])*e]) : o; });
         rgb=[0,1,2].map(c=>t.fa[c]+(t.fb[c]-t.fa[c])*e); op=t.oa+(t.ob-t.oa)*e;
       } else if (t.type==='out'){ const e=smooth(tr.seq ? T/SEQ[0] : T); loops=t.sc?scaleLoops(t.from,t.hub,1-t.sc*e):t.from; if (t.sc) d=undefined; rgb=t.fa; op=t.oa*(1-e); }
@@ -433,7 +468,7 @@ class SignView{
 /* ============================================================ grid */
 const grid=document.getElementById('grid'), tiles={};
 /* addresses. Served over the web, each sign has a real page (build.py writes <slug>/index.html), and moving around the home
-   page uses those same addresses. Opened as a file, or as the single-file build, the site uses #/ addresses instead. */
+   page uses those same addresses. Opened as a file, the site uses #/ addresses instead. */
 const SIGN=document.body.dataset.sign;                                // set on a sign's own page
 const ABOUT=document.body.dataset.page==='about';
 const PATHS=/^https?:$/.test(location.protocol) && document.body.hasAttribute('data-pages');
