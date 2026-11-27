@@ -435,6 +435,7 @@ const grid=document.getElementById('grid'), tiles={};
 /* addresses. Served over the web, each sign has a real page (build.py writes <slug>/index.html), and moving around the home
    page uses those same addresses. Opened as a file, or as the single-file build, the site uses #/ addresses instead. */
 const SIGN=document.body.dataset.sign;                                // set on a sign's own page
+const ABOUT=document.body.dataset.page==='about';
 const PATHS=/^https?:$/.test(location.protocol) && document.body.hasAttribute('data-pages');
 const ROOT=new URL(document.body.dataset.root||'./', location.href);   // the home folder, worked out before the address first changes
 if (PATHS && !SIGN){ const base=document.createElement('base'); base.href=ROOT.href; document.head.prepend(base); }   // keeps images/… working while the address shows /stop/
@@ -622,10 +623,10 @@ function requestClose(){
   if (history.length>1 && !firstLoadOpen) history.back();
   else { try{ history.replaceState(null,'',(PATHS ? ROOT.pathname : location.pathname)+location.search); }catch(e){} closeDetail(); }
 }
-$('close').addEventListener('click',()=>requestClose());
-$('d-vars').addEventListener('scroll',fadeEdges,{passive:true});
-new ResizeObserver(()=>{ if (cur){ showThumb($('d-vars'),cur.sign.vi); fadeEdges(); } }).observe(document.querySelector('.stage'));
-document.querySelectorAll('.logo').forEach(b=>b.addEventListener('click',e=>{ if (newTab(e)) return; e.preventDefault(); if (cur) requestClose(); else scrollTo({top:0,behavior:'smooth'}); }));
+$('close')?.addEventListener('click',()=>requestClose());
+$('d-vars')?.addEventListener('scroll',fadeEdges,{passive:true});
+if (detail) new ResizeObserver(()=>{ if (cur){ showThumb($('d-vars'),cur.sign.vi); fadeEdges(); } }).observe(document.querySelector('.stage'));
+document.querySelectorAll('.logo').forEach(b=>b.addEventListener('click',e=>{ if (newTab(e) || ABOUT) return; e.preventDefault(); if (cur) requestClose(); else scrollTo({top:0,behavior:'smooth'}); }));
 addEventListener('keydown',e=>{
   if(!cur) return;
   if(e.key==='Escape') requestClose();
