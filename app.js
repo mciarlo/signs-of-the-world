@@ -305,7 +305,7 @@ function roundedPath(P, d, rho){                       // (P inset by d) grown b
 const layerPath = (P, r, d) => d<=1e-6 ? roundedPath(P,r,r) : (r>=d ? roundedPath(P,r,r-d) : roundedPath(P,d,0));   // inner layers keep radius r-d, and go sharp once d > r
 const pairsOf = p => { const o=[]; for (let i=0;i<p.length;i+=2) o.push([p[i],p[i+1]]); return o; };      // 8 points: every corner is a pair that can slide apart (octagon)
 const sizeOfP = P => { const xs=P.map(q=>q[0]), ys=P.map(q=>q[1]); return Math.min(Math.max(...xs)-Math.min(...xs), Math.max(...ys)-Math.min(...ys)); };
-function expandDef(j){                                 // flat json -> frame state, exactly the prototype's model (proto/shape-morph.html)
+function expandDef(j){                                 // flat json -> frame state, exactly the prototype's model (../signsoftheworld-proto/shape-morph-8.html)
   if (j.shape==='x'){                                  // crossbuck: two bars crossing at +-angle about the centre. Corner radius and border are fractions of the bar length.
     const bw=j.borderWidth||0, c=hexRgb;                // each bar end: a cap of length endLength whose tip is endWidth of the bar wide (1 = flat end, 0 = a point)
     return { kind:'x', th:j.angle, L:j.length, W:j.width, t:j.endLength||0, f:j.endWidth==null?1:j.endWidth, r:j.radius||0, a:0, b:bw, halo:c(j.borderColor), ring:c(j.borderColor), face:c(j.fill), alpha:1 }; }
