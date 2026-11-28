@@ -3,16 +3,22 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- analytics: Google Tag Manager, on the live site only (build.py copies this block into each sign page) -->
   <script>
     if (location.hostname === 'signsofthe.world') (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-PBXRNBL2');
   </script>
-  <!-- end analytics -->
   <title>Signs of the World &middot; Universal signs and symbols</title>
   <meta name="description" content="A collection of universal signs and symbols. Dedicated to the cooperative spirit and the beauty of visual language.">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <script id="theme">
+    const setTheme = theme => {
+      const forced = theme === 'light' || theme === 'dark';
+      if (forced) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
+      document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.content = (forced ? theme === 'dark' : m.media.includes('dark')) ? '#000000' : '#ffffff');
+    };
+    try { setTheme(localStorage.getItem('theme')); } catch (e) {}
+  </script>
   <link rel="canonical" href="https://signsofthe.world/">
-  <!-- link previews -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Signs of the World">
   <meta property="og:title" content="Signs of the World &middot; Universal signs and symbols">
@@ -33,10 +39,14 @@
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-pages>   <!-- data-pages: build.py has made a real page for each sign, so the script uses their addresses -->
+<body data-pages>
   <header class="bar">
     <a class="logo" href="./">Signs of the World</a>
-    <button type="button" class="close" id="close" aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <button type="button" class="close" id="close" aria-label="Close">
+      <svg viewBox="0 0 12 12" aria-hidden="true">
+        <path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </button>
   </header>
 
   <main>
@@ -44,7 +54,9 @@
       <h1>A collection of universal signs and symbols. <span>Dedicated to the cooperative spirit and the beauty of visual language.</span></h1>
       <!-- the main photo, named after its photographer -->
       <figure class="hero">
-        <picture><source srcset="images/street-signs-theo-peter.webp" type="image/webp"><img src="images/street-signs-theo-peter.jpg" alt="Crosswalk and speed signs on a European city block" width="1320" height="924" fetchpriority="high"></picture>
+        <picture><source srcset="images/street-signs-theo-peter.webp" type="image/webp">
+          <img src="images/street-signs-theo-peter.jpg" alt="Crosswalk and speed signs on a European city block" width="1320" height="924" fetchpriority="high">
+        </picture>
         <figcaption class="credit">Photo by Theo Peter</figcaption>
       </figure>
     </section>
@@ -54,14 +66,20 @@
   <footer class="foot">
     <p class="word"><span>Signs of the World</span></p>
     <div class="row">
-      <nav aria-label="Footer">
-        <ul>
-          <li><a href="about/">About</a></li>
-          <li><a href="https://x.com/signsoftheworld" target="_blank" rel="noopener">Updates</a></li>
-          <li><button type="button" id="contact">Get in touch</button></li>
-        </ul>
-      </nav>
-      <!-- photos, named after their photographers. A grey square shows if a file is missing -->
+      <div class="links">
+        <nav aria-label="Footer">
+          <ul>
+            <li><a href="about/">About</a></li>
+            <li><a href="https://x.com/signsoftheworld" target="_blank" rel="noopener">Updates</a></li>
+            <li><button type="button" id="contact">Get in touch</button></li>
+          </ul>
+        </nav>
+        <div class="theme" role="group" aria-label="Theme">
+          <button type="button" value="light">Light</button>
+          <button type="button" value="dark">Dark</button>
+          <button type="button" value="system">System</button>
+        </div>
+      </div>
       <figure class="shot"><picture><source srcset="images/no-entry-visual-patrol.webp" type="image/webp"><img src="images/no-entry-visual-patrol.jpg" alt="A dented no entry sign" width="650" height="650" loading="lazy" onerror="this.closest('picture').remove()"></picture></figure>
       <figure class="shot"><picture><source srcset="images/yield-ibrahim-guetar.webp" type="image/webp"><img src="images/yield-ibrahim-guetar.jpg" alt="A yield sign on a post" width="650" height="650" loading="lazy" onerror="this.closest('picture').remove()"></picture></figure>
       <figure class="shot"><picture><source srcset="images/bike-lane-sandrine-bascouert.webp" type="image/webp"><img src="images/bike-lane-sandrine-bascouert.jpg" alt="A bicycle sign on a pole" width="650" height="650" loading="lazy" onerror="this.closest('picture').remove()"></picture></figure>
@@ -69,7 +87,7 @@
   </footer>
 
   <article id="detail" aria-labelledby="d-name">
-    <div class="info">   <!-- the right-hand column on desktop -->
+    <div class="info">
       <h2 class="dtitle" id="d-name"></h2>
       <div class="facts" id="d-meta"></div>
     </div>

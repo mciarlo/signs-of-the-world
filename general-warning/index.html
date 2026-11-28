@@ -4,14 +4,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- analytics: Google Tag Manager, on the live site only (build.py copies this block into each sign page) -->
   <script>
     if (location.hostname === 'signsofthe.world') (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-PBXRNBL2');
   </script>
-  <!-- end analytics -->
   <title>General warning · Signs of the World</title>
   <meta name="description" content="The 1949 Geneva Protocol on Road Signs and Signals included an &quot;Other Danger&quot; sign, shown as a red triangle with a single vertical bar.">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <script id="theme">
+    const setTheme = theme => {
+      const forced = theme === 'light' || theme === 'dark';
+      if (forced) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
+      document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.content = (forced ? theme === 'dark' : m.media.includes('dark')) ? '#000000' : '#ffffff');
+    };
+    try { setTheme(localStorage.getItem('theme')); } catch (e) {}
+  </script>
   <link rel="canonical" href="https://signsofthe.world/general-warning/">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Signs of the World">
@@ -35,12 +42,16 @@
 <body class="lock" data-pages data-sign="general-warning" data-root="../">
   <header class="bar">
     <a class="logo" href="../">Signs of the World</a>
-    <button type="button" class="close" id="close" aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <button type="button" class="close" id="close" aria-label="Close">
+      <svg viewBox="0 0 12 12" aria-hidden="true">
+        <path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </button>
   </header>
 
   <main>
   <article id="detail" class="open in" style="opacity:1" aria-labelledby="d-name">
-    <div class="info">   <!-- the right-hand column on desktop -->
+    <div class="info">
       <h1 class="dtitle" id="d-name">General warning</h1>
       <div class="facts" id="d-meta"><section class="row"><h2>History</h2><p>The 1949 Geneva Protocol on Road Signs and Signals included an &quot;Other Danger&quot; sign, shown as a red triangle with a single vertical bar. The 1968 Vienna Convention on Road Signs and Signals keeps a warning for other dangers, shown today with an exclamation mark.</p></section><section class="row"><h2>Adoption</h2><p>The exclamation mark flags dangers that have no symbol of their own, on roads and in workplaces. The ISO 7010 safety standard sets it in a yellow triangle, often with a few words of explanation.</p></section><section class="row"><h2>Sources</h2><ul><li><a href="https://treaties.un.org/doc/Publication/UNTS/Volume%20182/volume-182-I-1671-English.pdf" target="_blank" rel="noopener noreferrer">UN Treaty Series vol. 182: 1949 Protocol, Article 25</a></li><li><a href="https://commons.wikimedia.org/wiki/File:1949_Geneva_Protocol_road_sign_I-21-V1.svg" target="_blank" rel="noopener noreferrer">Wikimedia Commons: 1949 Other Danger sign</a></li><li><a href="https://treaties.un.org/doc/Treaties/1978/06/19780606%2000-35%20AM/Ch_XI_B_20.pdf" target="_blank" rel="noopener noreferrer">UN: Convention on Road Signs and Signals (Annex 1)</a></li><li><a href="https://commons.wikimedia.org/wiki/File:Vienna_Convention_road_sign_Aa-32-V1.svg" target="_blank" rel="noopener noreferrer">Wikimedia Commons: Vienna other dangers sign</a></li><li><a href="https://www.iso.org/standard/72424.html" target="_blank" rel="noopener noreferrer">ISO 7010</a></li></ul></section></div>
     </div>

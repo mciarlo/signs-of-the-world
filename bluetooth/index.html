@@ -4,14 +4,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- analytics: Google Tag Manager, on the live site only (build.py copies this block into each sign page) -->
   <script>
     if (location.hostname === 'signsofthe.world') (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-PBXRNBL2');
   </script>
-  <!-- end analytics -->
   <title>Bluetooth · Signs of the World</title>
   <meta name="description" content="The name was proposed in 1997 by Jim Kardach of Intel, after King Harald Bluetooth, the 10th-century Danish king who united the Danish tribes into one…">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <script id="theme">
+    const setTheme = theme => {
+      const forced = theme === 'light' || theme === 'dark';
+      if (forced) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
+      document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.content = (forced ? theme === 'dark' : m.media.includes('dark')) ? '#000000' : '#ffffff');
+    };
+    try { setTheme(localStorage.getItem('theme')); } catch (e) {}
+  </script>
   <link rel="canonical" href="https://signsofthe.world/bluetooth/">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Signs of the World">
@@ -35,12 +42,16 @@
 <body class="lock" data-pages data-sign="bluetooth" data-root="../">
   <header class="bar">
     <a class="logo" href="../">Signs of the World</a>
-    <button type="button" class="close" id="close" aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <button type="button" class="close" id="close" aria-label="Close">
+      <svg viewBox="0 0 12 12" aria-hidden="true">
+        <path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </button>
   </header>
 
   <main>
   <article id="detail" class="open in" style="opacity:1" aria-labelledby="d-name">
-    <div class="info">   <!-- the right-hand column on desktop -->
+    <div class="info">
       <h1 class="dtitle" id="d-name">Bluetooth</h1>
       <div class="facts" id="d-meta"><section class="row"><h2>History</h2><p>The name was proposed in 1997 by Jim Kardach of Intel, after King Harald Bluetooth, the 10th-century Danish king who united the Danish tribes into one kingdom. Kardach picked it as a code name for a technology meant to unite communication protocols. The logo is a bind rune that merges Harald&#x27;s initials, the Younger Futhark runes Hagall and Bjarkan.</p></section><section class="row"><h2>Adoption</h2><p>The rune appears on phones, headphones and speakers around the world, with 4.7 billion Bluetooth chips shipped each year as of 2021.</p></section><section class="row"><h2>Sources</h2><ul><li><a href="https://en.wikipedia.org/wiki/Bluetooth" target="_blank" rel="noopener noreferrer">Wikipedia: Bluetooth</a></li></ul></section></div>
     </div>

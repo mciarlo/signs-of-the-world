@@ -2,11 +2,15 @@
    Desktop changes are all in one place at the bottom (wider than 1024px).
    The one exception is a small step to four columns for the sign grid and footer (wider than 700px). */
 :root {
-  --bg: #ffffff;
-  --ink: #111;
-  --mute: #8a8a8a;
-  --rule: #e1e1e1;
+  color-scheme: light dark; /* follow the system's light or dark setting */
+  --bg: light-dark(#ffffff, #000);
+  --text: light-dark(#111, #e1e1e1);
+  --subtle: light-dark(#8a8a8a, #8B8B8B);
+  --rule: light-dark(#e1e1e1, #222);
+  --surface: light-dark(#f5f5f7, #141414); /* the boxes behind the signs */
+  --placeholder: light-dark(#ececec, #1c1c1c); /* behind photos while they load */
   --ease: cubic-bezier(0.76, 0, 0.24, 1);
+  --hoverDuration: 100ms;
   --font: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --bar: 80px;
   --pad: 20px; /* page margin */
@@ -14,6 +18,12 @@
   --base: 14px;
   --label: 13px;
 }
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+} /* a choice made in the footer overrides the system */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -22,7 +32,7 @@
 html,
 body {
   background: var(--bg);
-  color: var(--ink);
+  color: var(--text);
   font-family: var(--font);
   font-size: var(--base);
   line-height: 1.3;
@@ -53,9 +63,9 @@ h3 {
   font-weight: 400;
 }
 :focus-visible {
-  outline: 2px solid var(--ink);
+  outline: 2px solid var(--text);
   outline-offset: 0;
-} /* keyboard focus: a black ring, not the browser's blue one */
+} /* keyboard focus: a ring in the text colour, not the browser's blue one */
 
 /* header: always there, stuck to the top of the page */
 header.bar {
@@ -63,7 +73,7 @@ header.bar {
   top: 0;
   height: var(--bar);
   z-index: 100;
-  background: rgba(255, 255, 255, 0.9);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -85,6 +95,9 @@ header.bar .logo {
   flex: none;
   overflow: visible;
 }
+.mark path {
+  fill: currentColor; /* the logo shape follows the text colour (overrides the script's fill) */
+}
 header.bar .close {
   display: none;
   place-items: center;
@@ -93,14 +106,14 @@ header.bar .close {
   flex: none;
   margin-right: calc(20px - var(--pad)); /* the close button sits 20px from the edge */
   border: 1px solid var(--rule);
-  transition: border-color 150ms ease;
+  transition: border-color var(--hoverDuration) ease;
 }
 header.bar .close svg {
   width: 11px;
   height: 11px;
 }
 header.bar .close:hover {
-  border-color: var(--ink);
+  border-color: var(--text);
 }
 body.lock header.bar .close {
   display: grid;
@@ -120,7 +133,7 @@ body.lock header.bar .close {
   letter-spacing: -0.05em;
 }
 .intro h1 span {
-  color: var(--mute);
+  color: var(--subtle);
 }
 .intro .hero {
   margin-top: 40px;
@@ -130,11 +143,11 @@ body.lock header.bar .close {
   width: 100%;
   height: auto;
   aspect-ratio: 1320 / 924; /* the photo's own shape, so nothing is cropped */
-  background: #ececec;
+  background: var(--placeholder);
 }
 .intro .credit {
   margin-top: 8px;
-  color: var(--mute);
+  color: var(--subtle);
 }
 
 /* grid: rows of grey boxes holding only the sign; the name and number of versions sit below each box */
@@ -156,7 +169,7 @@ body.lock header.bar .close {
   justify-content: center;
   width: 100%;
   overflow: hidden;
-  background: #f5f5f7;
+  background: var(--surface);
 }
 .tile svg {
   width: 78%;
@@ -177,7 +190,7 @@ body.lock header.bar .close {
 .cell p {
   margin-top: 8px;
   line-height: 1.25;
-  color: var(--mute);
+  color: var(--subtle);
 } /* name to number of versions: 8px */
 
 /* footer: the name across the full width, then the links and three photos in two columns */
@@ -202,8 +215,12 @@ body.lock header.bar .close {
   gap: var(--gutter);
   margin-top: clamp(40px, 6vw, 96px);
 }
-.foot nav {
-  align-self: start;
+.foot .links {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* links at the top, theme switcher level with the bottom of the photos */
+  align-items: flex-start;
+  gap: 24px;
 }
 .foot nav ul {
   display: flex;
@@ -214,16 +231,30 @@ body.lock header.bar .close {
 .foot nav button,
 .foot nav a {
   line-height: 1.3;
-  transition: opacity 150ms ease;
+  transition: opacity var(--hoverDuration) ease;
 }
 .foot nav button:hover,
 .foot nav a:hover {
   opacity: 0.55;
 }
+.foot .theme {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.foot .theme button {
+  line-height: 1.3;
+  color: var(--subtle);
+  transition: color var(--hoverDuration) ease;
+}
+.foot .theme button:hover,
+.foot .theme button[aria-pressed="true"] {
+  color: var(--text);
+}
 .foot .shot {
   aspect-ratio: 1;
   overflow: hidden;
-  background: #ececec;
+  background: var(--placeholder);
 }
 .foot .shot picture {
   display: block;
@@ -279,7 +310,7 @@ body.lock header.bar .close {
 }
 .facts .row p,
 .facts .row ul {
-  color: var(--mute);
+  color: var(--subtle);
   text-wrap: pretty;
 }
 .facts .row a {
@@ -288,7 +319,7 @@ body.lock header.bar .close {
   text-underline-offset: 2px;
 }
 .facts .row a:hover {
-  color: var(--ink);
+  color: var(--text);
 }
 /* the stage takes its height from its width: a square for the sign with the switcher (if any) under it, 800px at most */
 .stage {
@@ -296,7 +327,7 @@ body.lock header.bar .close {
   flex: none;
   display: flex;
   flex-direction: column;
-  background: #f5f5f7;
+  background: var(--surface);
   container-type: inline-size;
 }
 #hero {
@@ -322,7 +353,7 @@ body.lock header.bar .close {
 }
 .tag {
   margin: 0 var(--inset) 6px;
-  color: var(--mute);
+  color: var(--subtle);
 }
 .tag:empty {
   display: none;
@@ -350,12 +381,16 @@ body.lock header.bar .close {
   background: transparent;
   padding: 4px;
   overflow: hidden;
+  transition: border-color var(--hoverDuration) ease;
+}
+.vars button:hover {
+  border-color: var(--text);
 }
 .vars img {
   padding: 6px;
 }
 .vars button.on {
-  border-color: var(--ink);
+  border-color: var(--text);
 }
 .vars svg {
   width: 100%;
@@ -385,6 +420,16 @@ body.lock header.bar .close {
   display: block;
 }
 
+/* recycling is a bare black symbol, so it turns light in dark mode (img: the plain image on its own page) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) :is(svg[data-sign="recycling"], img[src$="svg/recycling.svg"]) {
+    filter: invert(88%); /* black becomes the dark theme's text colour */
+  }
+}
+:root[data-theme="dark"] :is(svg[data-sign="recycling"], img[src$="svg/recycling.svg"]) {
+  filter: invert(88%);
+}
+
 /* about: heading, photo, text, credit */
 .about {
   display: flex;
@@ -404,7 +449,7 @@ body.lock header.bar .close {
   width: 100%;
   max-width: 520px; /* the text's width, so the photos don't balloon on tablets */
   aspect-ratio: 33 / 37;
-  background: #ececec;
+  background: var(--placeholder);
 }
 .about figure img {
   position: absolute;
@@ -422,6 +467,10 @@ body.lock header.bar .close {
 .about-text p {
   text-wrap: pretty;
 }
+.about-text .signature,
+.about-text a {
+  display: block;
+}
 .about-text p + p,
 .about-text div + div {
   margin-top: 20px;
@@ -430,7 +479,7 @@ body.lock header.bar .close {
 .about-credit a {
   text-decoration: underline;
   text-underline-offset: 2px;
-  transition: opacity 150ms ease;
+  transition: opacity var(--hoverDuration) ease;
 }
 .about-text a:hover,
 .about-credit a:hover {
@@ -438,11 +487,11 @@ body.lock header.bar .close {
 } /* the same hover as the footer links */
 .about-credit {
   margin-top: 8px;
-  color: var(--mute);
+  color: var(--subtle);
 }
 
 /* ---------------------------------------------------------------- tablet: the sign grid and footer change to four columns */
-@media (min-width: 701px) {
+@media (min-width: 768px) {
   .grid {
     grid-template-columns: repeat(4, 1fr);
     row-gap: 48px;
@@ -453,7 +502,7 @@ body.lock header.bar .close {
 }
 
 /* ---------------------------------------------------------------- desktop */
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
   :root {
     --pad: 40px;
     --gutter: 40px;

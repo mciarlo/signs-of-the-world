@@ -370,6 +370,7 @@ class SignView{
     this.off = this.shaped ? 3 : 0;                                                // the first three paths are halo, ring, face
     this.L=fam.ids.map(id=>this.shaped ? prep(id).filter(l=>l.kind==='s') : prep(id));
     this.svg=document.createElementNS(NS_URI,'svg'); this.svg.setAttribute('viewBox',VB); this.svg.setAttribute('role','img'); this.svg.setAttribute('aria-label',fam.name);
+    this.svg.dataset.sign=fam.ids[0];                                              // lets the stylesheet pick out one sign
     this.base=this.shaped ? this.svg.appendChild(document.createElementNS(NS_URI,'g')) : null;   // the frame's own group, so the frame can fade as one piece
     this.paths=[]; this.ensure(this.off+Math.max(...this.L.map(l=>l.length)));
     this.showExact(vi);
@@ -676,3 +677,11 @@ buildLogo();                                                          // after e
 { const c=[64,93,91,74,54,12,54,55,8,9,0,26,28,231,237,243,245,207,193,195,218,223,170,171,189,190,173,220,140,157,156,112,106,121,120,48,74,88,68], o=[19,23,0,11,3,34,27,21,22,15,26,16,17,4,10,14,37,38,9,31,6,36,25,18,8,13,33,28,2,5,30,7,12,29,24,35,32,20,1];
   $('contact')?.addEventListener('click', e => { if (!e.isTrusted) return;     // ignore clicks made by scripts
     location.href = o.map(n => String.fromCharCode(c[n] ^ ((41+7*n)&255))).join(''); }); }
+
+/* footer theme switcher: the choice is saved in this browser, and the script in each page's head applies it before the page draws */
+{ const buttons=document.querySelectorAll('.theme button');
+  const mark=()=>{ const on=document.documentElement.dataset.theme||'system'; buttons.forEach(b=>b.setAttribute('aria-pressed',b.value===on)); };
+  buttons.forEach(b=>b.addEventListener('click',()=>{ setTheme(b.value);
+    try{ if (b.value==='system') localStorage.removeItem('theme'); else localStorage.setItem('theme',b.value); }catch(e){}
+    mark(); }));
+  mark(); }

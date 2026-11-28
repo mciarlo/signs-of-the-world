@@ -4,14 +4,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- analytics: Google Tag Manager, on the live site only (build.py copies this block into each sign page) -->
   <script>
     if (location.hostname === 'signsofthe.world') (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-PBXRNBL2');
   </script>
-  <!-- end analytics -->
   <title>Speed limit · Signs of the World</title>
   <meta name="description" content="In 1896, Walter Arnold of Kent became what is believed to be the first person convicted of speeding, at 8 mph.">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <script id="theme">
+    const setTheme = theme => {
+      const forced = theme === 'light' || theme === 'dark';
+      if (forced) document.documentElement.dataset.theme = theme; else delete document.documentElement.dataset.theme;
+      document.querySelectorAll('meta[name="theme-color"]').forEach(m => m.content = (forced ? theme === 'dark' : m.media.includes('dark')) ? '#000000' : '#ffffff');
+    };
+    try { setTheme(localStorage.getItem('theme')); } catch (e) {}
+  </script>
   <link rel="canonical" href="https://signsofthe.world/speed-limit/">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="Signs of the World">
@@ -35,12 +42,16 @@
 <body class="lock" data-pages data-sign="speed-limit" data-root="../">
   <header class="bar">
     <a class="logo" href="../">Signs of the World</a>
-    <button type="button" class="close" id="close" aria-label="Close"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></button>
+    <button type="button" class="close" id="close" aria-label="Close">
+      <svg viewBox="0 0 12 12" aria-hidden="true">
+        <path d="M1 1l10 10M11 1L1 11" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      </svg>
+    </button>
   </header>
 
   <main>
   <article id="detail" class="open in" style="opacity:1" aria-labelledby="d-name">
-    <div class="info">   <!-- the right-hand column on desktop -->
+    <div class="info">
       <h1 class="dtitle" id="d-name">Speed limit</h1>
       <div class="facts" id="d-meta"><section class="row"><h2>History</h2><p>In 1896, Walter Arnold of Kent became what is believed to be the first person convicted of speeding, at 8 mph. In 1904, the United Kingdom set out one of the first standard speed limit signs, a white ring above a plate showing the number. The 1968 Vienna Convention on Road Signs and Signals specifies the number inside a red ring.</p></section><section class="row"><h2>Adoption</h2><p>A number in a red ring is widely adopted around the world, in both kilometers and miles per hour. A few exceptions exist, like the US rectangle and roads like Germany&#x27;s Autobahn, much of which has no permanent limit.</p></section><section class="row"><h2>Sources</h2><ul><li><a href="https://en.wikipedia.org/wiki/Speed_limit" target="_blank" rel="noopener noreferrer">Wikipedia: Speed limit</a></li><li><a href="https://en.wikipedia.org/wiki/Motor_Car_Act_1903" target="_blank" rel="noopener noreferrer">Wikipedia: Motor Car Act 1903</a></li><li><a href="https://www.roads.org.uk/articles/clear-legible" target="_blank" rel="noopener noreferrer">Roads.org.uk: Clear and legible</a></li><li><a href="https://treaties.un.org/doc/Treaties/1978/06/19780606%2000-35%20AM/Ch_XI_B_20.pdf" target="_blank" rel="noopener noreferrer">UN: Convention on Road Signs and Signals (Annex 4)</a></li><li><a href="https://mutcd.fhwa.dot.gov/htm/2009/part2/part2b.htm" target="_blank" rel="noopener noreferrer">MUTCD 2009, Part 2B</a></li></ul></section></div>
     </div>
